@@ -24,7 +24,7 @@
 
 #include "interface_sercos_protocol.h"
 #include "config.h"
-#include "exceptions.h"
+#include "robotkernel/exceptions.h"
 
 using namespace std;
 using namespace robotkernel;
@@ -51,7 +51,7 @@ sercos_protocol::sercos_protocol(const std::string& mod_name,
 }
 
 int sercos_protocol::on_read_id(ln::service_request& req, 
-        ln_service_sercos_protocol_read_id& svc) {
+        ln_service_robotkernel_sercos_protocol_read_id& svc) {
     service_id id(_mod_name, _slave_id, svc.req.idn, svc.req.elements);
     
     // get id name 
@@ -111,7 +111,7 @@ int sercos_protocol::on_read_id(ln::service_request& req,
     return 0;
 }
 
-int sercos_protocol::on_write_id(ln::service_request& req, ln_service_sercos_protocol_write_id& svc) {
+int sercos_protocol::on_write_id(ln::service_request& req, ln_service_robotkernel_sercos_protocol_write_id& svc) {
     string value(svc.req.value, svc.req.value_len);
 
     // get service id and read attribute
@@ -161,7 +161,7 @@ int sercos_protocol::on_write_id(ln::service_request& req, ln_service_sercos_pro
     return 0;
 }
         
-int sercos_protocol::on_set_command(ln::service_request& req, ln_service_sercos_protocol_set_command& svc) {
+int sercos_protocol::on_set_command(ln::service_request& req, ln_service_robotkernel_sercos_protocol_set_command& svc) {
     sercos_set_command_t cmd = { _slave_id, svc.req.cmd };
 
     // execute procedure command    

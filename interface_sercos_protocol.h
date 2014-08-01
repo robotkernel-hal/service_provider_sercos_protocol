@@ -25,13 +25,13 @@
 #ifndef __INTERFACE_SERCOS_PROTOCOL_H__
 #define __INTERFACE_SERCOS_PROTOCOL_H__
 
-#include "kernel.h"
-#include "module.h"
-#include "interface_intf.h"
-#include "interfaces/sercos_protocol/service_id.h"
+#include "robotkernel/kernel.h"
+#include "robotkernel/module.h"
+#include "robotkernel/interface_intf.h"
+#include "service_id.h"
 
 #define LN_UNREGISTER_SERVICE_IN_BASE_DETOR  
-#include "interfaces/sercos_protocol/ln_messages.h"
+#include "ln_messages.h"
 #undef LN_UNREGISTER_SERVICE_IN_BASE_DETOR
 
 #include <list>
@@ -56,9 +56,9 @@ class sercos_protocol :
          */
         sercos_protocol(const std::string& mod_name, const std::string& dev_name, const int& slave_id);
 
-        int on_read_id(ln::service_request& req, ln_service_sercos_protocol_read_id& svc);
-        int on_write_id(ln::service_request& req, ln_service_sercos_protocol_write_id& svc);
-        int on_set_command(ln::service_request& req, ln_service_sercos_protocol_set_command& svc);
+        int on_read_id(ln::service_request& req, ln_service_robotkernel_sercos_protocol_read_id& svc);
+        int on_write_id(ln::service_request& req, ln_service_robotkernel_sercos_protocol_write_id& svc);
+        int on_set_command(ln::service_request& req, ln_service_robotkernel_sercos_protocol_set_command& svc);
 };
 
 } // namespace interface

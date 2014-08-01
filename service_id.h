@@ -25,8 +25,8 @@
 #ifndef __MODULE_SERCOS_ID_H__
 #define __MODULE_SERCOS_ID_H__
 
-#include "kernel.h"
-#include "module.h"
+#include "robotkernel/kernel.h"
+#include "robotkernel/module.h"
 #include <list>
 
 namespace robotkernel {
