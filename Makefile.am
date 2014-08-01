@@ -1,4 +1,6 @@
-libdir = $(prefix)/lib/robotkernel/interfaces
+ACLOCAL_AMFLAGS = -I m4 
+
+libdir = $(prefix)/lib
 lib_LTLIBRARIES = libinterface_sercos_protocol.la
 BUILT_SOURCES = ln_messages.h
 CLEANFILES = ln_messages.h
@@ -11,9 +13,9 @@ libinterface_sercos_protocol_la_LDFLAGS  = -Wall @PTHREAD_LIBS@ @RT_LIBS@ -relea
 VPATH = $(srcdir):$(srcdir)/message_definitions
 
 LN_MESSAGES = \
-			  sercos_protocol/read_id \
-			  sercos_protocol/write_id \
-			  sercos_protocol/set_command
+			  robotkernel/sercos_protocol/read_id \
+			  robotkernel/sercos_protocol/write_id \
+			  robotkernel/sercos_protocol/set_command
 
 ln_messages.h: Makefile $(LN_MESSAGES)
 	@echo creating ln_messages.h
