@@ -1,0 +1,15 @@
+service
+
+request
+uint16_t    idn
+uint8_t     elements
+
+response
+int32_t     state
+uint16_t    structure
+char*       name
+char*       unit
+uint32_t    attr
+char*       min_value
+char*       max_value
+char*       value

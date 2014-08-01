@@ -1,0 +1,7 @@
+service
+
+request
+int32_t cmd
+
+response
+int     state

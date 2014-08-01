@@ -1,0 +1,229 @@
+//! robotkernel module class
+/*!
+ * author: Robert Burger
+ *
+ * $Id$
+ */
+
+/*
+ * This file is part of robotkernel.
+ *
+ * robotkernel is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * robotkernel is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with robotkernel.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "interface_sercos_protocol.h"
+#include "config.h"
+#include "exceptions.h"
+
+using namespace std;
+using namespace robotkernel;
+using namespace interface;
+        
+//! default construction
+/*!
+ * \param mod_name module name to register for
+ */
+sercos_protocol::sercos_protocol(const std::string& mod_name, 
+        const std::string& dev_name, const int& slave_id) 
+    : _mod_name(mod_name), _dev_name(dev_name), _slave_id(slave_id) {
+    kernel& k = *kernel::get_instance();
+    if (!k.clnt)
+        throw str_exception("[interface_sercos_protocol|%s] no ln_connection!\n", 
+                mod_name.c_str());
+    
+    stringstream base;
+    base << k.clnt->name << "." << _mod_name << "." << _dev_name << ".";
+
+    register_read_id(k.clnt, base.str() + "sercos_protocol.read_id");
+    register_write_id(k.clnt, base.str() + "sercos_protocol.write_id");
+    register_set_command(k.clnt, base.str() + "sercos_protocol.set_command");
+}
+
+int sercos_protocol::on_read_id(ln::service_request& req, 
+        ln_service_sercos_protocol_read_id& svc) {
+    service_id id(_mod_name, _slave_id, svc.req.idn, svc.req.elements);
+    
+    // get id name 
+    if (svc.req.elements & SSE_NAME) {
+        svc.resp.name = &id.data.name[4];
+        svc.resp.name_len = ((uint16_t *)id.data.name)[0];
+    }
+    
+    // read structure
+    if (svc.req.elements & SSE_STRC)
+        svc.resp.structure = id.data.structure;
+    
+    // read unit
+    if (svc.req.elements & SSE_UNIT) {
+        uint16_t len = ((uint16_t *)id.data.unit)[0];
+
+        if (len == 0) {
+            svc.resp.unit = NULL;
+            svc.resp.unit_len = 0;
+        } else if (len <= 12) {
+            svc.resp.unit = &id.data.unit[4];
+            svc.resp.unit_len = len;
+        }
+    }
+        
+    // get idn attribute
+    if (svc.req.elements & SSE_ATTR)
+        svc.resp.attr = *(uint32_t *)&id.data.attr;
+
+    if (svc.req.elements & SSE_MINVAL) {
+        string tmp = id.min_val_to_string();
+        svc.resp.min_value = strdup(tmp.c_str());
+        svc.resp.min_value_len = strlen(svc.resp.min_value);
+    }
+    
+    if (svc.req.elements & SSE_MAXVAL) {
+        string tmp = id.max_val_to_string();
+        svc.resp.max_value = strdup(tmp.c_str());
+        svc.resp.max_value_len = strlen(svc.resp.max_value);
+    }
+
+    if (svc.req.elements & SSE_DATA) {
+        string tmp = id.val_to_string();
+        svc.resp.value = strdup(tmp.c_str());
+        svc.resp.value_len = strlen(svc.resp.value);
+    }
+
+    req.respond();
+
+    if (svc.resp.value)
+        free(svc.resp.value);
+    if (svc.resp.min_value)
+        free(svc.resp.min_value);
+    if (svc.resp.max_value)
+        free(svc.resp.max_value);
+
+    return 0;
+}
+
+int sercos_protocol::on_write_id(ln::service_request& req, ln_service_sercos_protocol_write_id& svc) {
+    string value(svc.req.value, svc.req.value_len);
+
+    // get service id and read attribute
+    service_id id(_mod_name, _slave_id, svc.req.idn, SSE_ATTR);
+
+    if (svc.req.elements & SSE_NAME) {
+//        svc.resp.name = &id.data.name[4];
+//        svc.resp.name_len = ((uint16_t *)id.data.name)[0];
+    }
+    
+    // read structure
+    if (svc.req.elements & SSE_STRC)
+        id.data.structure = svc.req.structure;
+    
+    // read unit
+    if (svc.req.elements & SSE_UNIT) {
+//        uint16_t len = ((uint16_t *)id.data.unit)[0];
+//
+//        if (len <= 12) {
+//            svc.resp.unit = &id.data.unit[4];
+//            svc.resp.unit_len = len;
+//        }
+    }
+        
+    // get idn attribute
+    if (svc.req.elements & SSE_ATTR)
+        id.data.attr = *(sercos_service_attribute *)&svc.req.attr;
+
+    if (svc.req.elements & SSE_MINVAL) {
+        string min_val(svc.req.min_value, svc.req.min_value_len);
+        id.string_to_min_val(min_val.c_str());
+    }
+    
+    if (svc.req.elements & SSE_MAXVAL) {
+        string max_val(svc.req.max_value, svc.req.max_value_len);
+        id.string_to_max_val(max_val.c_str());
+    }
+
+    if (svc.req.elements & SSE_DATA) {
+        string val(svc.req.value, svc.req.value_len);
+        id.string_to_val(val.c_str());
+    }
+
+    id.write_elements(svc.req.elements);
+
+    req.respond();
+    return 0;
+}
+        
+int sercos_protocol::on_set_command(ln::service_request& req, ln_service_sercos_protocol_set_command& svc) {
+    sercos_set_command_t cmd = { _slave_id, svc.req.cmd };
+
+    // execute procedure command    
+    svc.resp.state = kernel::request_cb(_mod_name.c_str(), 
+            MOD_REQUEST_SERCOS_SET_COMMAND, (void *)&cmd);
+
+    req.respond();
+    return 0;
+}
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+#if 0
+}
+#endif
+
+//! interface register
+/*!
+ * \param mod_name module name to register
+ * \return interface handle
+ */
+INTERFACE_HANDLE intf_register(const char *mod_name, const char *dev_name, int slave_id) {
+    sercos_protocol *s = NULL;
+
+    klog(info, INTFNAME "%s: build by: " BUILD_USER "@" BUILD_HOST "\n", mod_name);
+    klog(info, INTFNAME "%s: build date: " BUILD_DATE "\n", mod_name);
+
+    // parsing sercos ring configuration
+    try {
+        s = new sercos_protocol(string(mod_name), string(dev_name), slave_id);
+    } catch(exception& e) {
+        klog(error, INTFNAME "%s: error constructing intercae:\n%s", mod_name, e.what());
+        goto ErrorExit;
+    }
+
+    return (INTERFACE_HANDLE)s;
+
+ErrorExit:
+    if (s)
+        delete s;
+
+    return (INTERFACE_HANDLE)NULL;
+}
+
+//! interface unregister
+/*!
+ * \param hdl interface handle
+ */
+void intf_unregister(INTERFACE_HANDLE hdl) {
+    // cast struct
+    sercos_protocol *s = (sercos_protocol *)hdl;
+
+    if (s)
+        delete s;
+}
+
+#if 0
+{
+#endif
+#ifdef __cplusplus
+}
+#endif
+
