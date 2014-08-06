@@ -1,12 +1,14 @@
 PTVERSION           = 2
 NAME                = interface_sercos_protocol
-VERSION             = 3.0.0
+VERSION             = 3.0.1
 DESCRIPTION         = robotkernel sercos protocol interface
 MAINTAINER          = Robert Burger <robert.burger@dlr.de>
+DOCUMENTATION       = https://rmintra01.robotic.dlr.de/wiki/robotkernel/interface_sercos_protocol
 ARCHS               = sled11-x86-gcc4.x, sled11-x86_64-gcc4.x, arm-angstrom-linux-gnueabi, vxworks6.7-x86-gcc4.x, vxworks6.8-x86-gcc4.x, vxworks6.9-x86-gcc4.x, vxworks6.9.3-x86-gcc4.x, vxworks6.9.4-x86-gcc4.x, qnx6.3-x86-gcc3.3, qnx6.5-x86-gcc4.x, qnx6.5-x86-gcc4.x-gpp
 
 [install]
 build/${ARCH}/install/lib => lib/${ARCH}
 doc/ => doc/
 message_definitions/ => share/message_definitions
+share/ln/ => share/ln/
 

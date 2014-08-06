@@ -23,8 +23,15 @@
  */
 
 #include "interface_sercos_protocol.h"
-#include "config.h"
 #include "robotkernel/exceptions.h"
+#undef BUILD_DATE
+#undef PACKAGE
+#undef PACKAGE_NAME
+#undef PACKAGE_STRING
+#undef PACKAGE_TARNAME
+#undef PACKAGE_VERSION
+#undef VERSION
+#include "config.h"
 
 using namespace std;
 using namespace robotkernel;
