@@ -76,7 +76,7 @@ AC_CHECK_LIB(dl, dlopen, DL_LIBS="-ldl", DL_LIBS=)
 AC_SUBST(DL_LIBS)
 
 AC_CONFIG_FILES([Makefile])
-AC_CONFIG_FILES([module_sercos_protocol.pt], [cp module_sercos_protocol.pt ${ac_abs_top_srcdir}])
+AC_CONFIG_FILES([interface_sercos_protocol.pt], [cp interface_sercos_protocol.pt ${ac_abs_top_srcdir}])
 
 AC_OUTPUT
 
