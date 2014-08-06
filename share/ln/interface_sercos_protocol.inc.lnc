@@ -1,0 +1,22 @@
+requires_version 0.2.43
+# this include file can be customized with the following defines:
+#   interface_sercos_protocol_base
+#     (optional) path to interface_sercos_protocol base directory
+#     e.g. /volume/software/robotkernel/packages/interface_sercos_protocol/3.0.1
+#     defaults to rmpm structure
+#   interface_sercos_protocol_libdir
+#     (optional) add custom module search paths
+#   interface_sercos_protocol_mds
+#     (optional) add custom message definition paths
+
+defines
+interface_sercos_protocol_base: %(dirname %(dirname %(CURDIR)))
+interface_sercos_protocol_libdir: %(interface_sercos_protocol_base)/lib/$(ARCH)
+interface_sercos_protocol_mds: %(interface_sercos_protocol_base)/share/message_definitions
+
+ifndef rk_interfaces: rk_interfaces: ""
+rk_interfaces: %(rk_interfaces):%(interface_sercos_protocol_libdir)
+
+ifndef rk_mds: rk_mds: ""
+rk_mds: %(rk_mds):%(interface_sercos_protocol_mds)
+
