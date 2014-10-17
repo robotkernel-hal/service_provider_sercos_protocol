@@ -56,30 +56,61 @@ int service_id::_write(sercos_service_element element, uint16_t *buf, size_t buf
 
 // get id name
 void service_id::_update_name() {
+    int ret;
     uint16_t size[2];
-    _read(SSE_NAME, &size[0], 2);
-    _read(SSE_NAME, (uint16_t *)&data.name[0], (size[0] + 4) / 2);
+    ret = _read(SSE_NAME, &size[0], 2);
+    if (ret) {
+        status = format_string("reading id name size failed. "
+                "service transfer error code %d", ret);
+        return;
+    }
+
+    ret = _read(SSE_NAME, (uint16_t *)&data.name[0], (size[0] + 4) / 2);
+    if (ret)
+        status = format_string("reading id name failed. "
+                "service transfer error code %d", ret);
 }
 
 // get id structure
 void service_id::_update_structure() {
-    _read(SSE_STRC, (uint16_t *)&data.structure, 1);
+    int ret;
+    ret = _read(SSE_STRC, (uint16_t *)&data.structure, 1);
+    if (ret)
+        status = format_string("reading id structure failed. "
+                "service transfer error code %d", ret);
 }
 
 // get unit
 void service_id::_update_unit() {
+    int ret;
     uint16_t size[2];
-    _read(SSE_UNIT, &size[0], 2);
-    if (size[0] <= 12)
-        _read(SSE_UNIT, (uint16_t *)&data.unit[0], (size[0] + 4) / 2);
+    ret = _read(SSE_UNIT, &size[0], 2);
+    if (ret) {
+        status = format_string("reading id unit size failed. "
+                "service transfer error code %d", ret);
+        return;
+    }
+
+    if (size[0] <= 12) {
+        ret = _read(SSE_UNIT, (uint16_t *)&data.unit[0], (size[0] + 4) / 2);
+        if (ret)
+            status = format_string("reading id unit failed. "
+                    "service transfer error code %d", ret);
+    }
 }
 
 // get idn attribute
 void service_id::_update_attr() {
-    _read(SSE_ATTR, (uint16_t *)&data.attr, sizeof(data.attr) / 2);
+    int ret;
+    ret = _read(SSE_ATTR, (uint16_t *)&data.attr, sizeof(data.attr) / 2);
+    if (ret)
+        status = format_string("reading id attr failed. "
+                "service transfer error code %d", ret);
 }
 
 void service_id::_update_val(sercos_service_element element, uint16_t ** ans, size_t *len) {
+    int ret;
+
     switch (data.attr.datalength) {
         case SSA_DATALENGTH_2BYTEFIX:
             if (*ans) {
@@ -89,7 +120,10 @@ void service_id::_update_val(sercos_service_element element, uint16_t ** ans, si
 
             *ans = new uint16_t[1]();
             *len = 2;
-            _read(element, *ans, 1);
+            ret = _read(element, *ans, 1);
+            if (ret)
+                status = format_string("reading id value failed. "
+                        "service transfer error code %d", ret);
             break;
         case SSA_DATALENGTH_4BYTEFIX:
             if (*ans) {
@@ -99,7 +133,10 @@ void service_id::_update_val(sercos_service_element element, uint16_t ** ans, si
 
             *ans = new uint16_t[2]();
             *len = 4;
-            _read(element, *ans, 2);
+            ret = _read(element, *ans, 2);
+            if (ret)
+                status = format_string("reading id value failed. "
+                        "service transfer error code %d", ret);
             break;
         case SSA_DATALENGTH_8BYTEFIX:
             if (*ans) {
@@ -109,14 +146,22 @@ void service_id::_update_val(sercos_service_element element, uint16_t ** ans, si
 
             *ans = new uint16_t[4]();
             *len = 8;
-            _read(element, *ans, 4);
+            ret = _read(element, *ans, 4);
+            if (ret)
+                status = format_string("reading id value failed. "
+                        "service transfer error code %d", ret);
             break;
         case SSA_DATALENGTH_1BYTEVAR:
         case SSA_DATALENGTH_2BYTEVAR:
         case SSA_DATALENGTH_4BYTEVAR:
         case SSA_DATALENGTH_8BYTEVAR: {
             uint16_t size[2];
-            _read(element, &size[0], 2);
+            ret = _read(element, &size[0], 2);
+            if (ret) {
+                status = format_string("reading id value size failed. "
+                        "service transfer error code %d", ret);
+                break;
+            }
 
             if (*ans) {
                 delete[] *ans;
@@ -126,7 +171,10 @@ void service_id::_update_val(sercos_service_element element, uint16_t ** ans, si
             *ans = new uint16_t[(size[0] + 4 + 1) / 2]();
             *len = size[0] + 4;
             memset(*ans, 0, *len);
-            _read(element, *ans, (size[0] + 4) / 2);
+            ret = _read(element, *ans, (size[0] + 4) / 2);
+            if (ret)
+                status = format_string("reading id value failed. "
+                        "service transfer error code %d", ret);
             break;
         }
         default:
@@ -138,6 +186,8 @@ void service_id::_update_val(sercos_service_element element, uint16_t ** ans, si
 service_id::service_id(string mod_name, int slave_id, int idn, int elements) 
     : mod_name(mod_name), slave_id(slave_id), idn(idn), elements(elements) {
     memset(&data, 0, sizeof(data));
+
+    status = "";
 
     if (elements & SSE_STRC)
         _update_structure();

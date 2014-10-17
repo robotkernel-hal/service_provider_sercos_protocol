@@ -25,6 +25,7 @@
 #include "interface_sercos_protocol.h"
 #include "robotkernel/exceptions.h"
 #undef BUILD_DATE
+#undef BUILD_HOST
 #undef PACKAGE
 #undef PACKAGE_NAME
 #undef PACKAGE_STRING
@@ -60,6 +61,15 @@ sercos_protocol::sercos_protocol(const std::string& mod_name,
 int sercos_protocol::on_read_id(ln::service_request& req, 
         ln_service_robotkernel_sercos_protocol_read_id& svc) {
     service_id id(_mod_name, _slave_id, svc.req.idn, svc.req.elements);
+
+    if (id.status != "") {
+        // error occured
+        svc.resp.error_message = strdup(id.status.c_str());
+        svc.resp.error_message_len = strlen(svc.resp.error_message);
+        req.respond();
+        free(svc.resp.error_message);
+        return 0;
+    }
     
     // get id name 
     if (svc.req.elements & SSE_NAME) {
@@ -195,14 +205,14 @@ extern "C" {
 INTERFACE_HANDLE intf_register(const char *mod_name, const char *dev_name, int slave_id) {
     sercos_protocol *s = NULL;
 
-    klog(info, INTFNAME "%s: build by: " BUILD_USER "@" BUILD_HOST "\n", mod_name);
-    klog(info, INTFNAME "%s: build date: " BUILD_DATE "\n", mod_name);
+    klog(interface_info, INTFNAME "%s: build by: " BUILD_USER "@" BUILD_HOST "\n", mod_name);
+    klog(interface_info, INTFNAME "%s: build date: " BUILD_DATE "\n", mod_name);
 
     // parsing sercos ring configuration
     try {
         s = new sercos_protocol(string(mod_name), string(dev_name), slave_id);
     } catch(exception& e) {
-        klog(error, INTFNAME "%s: error constructing intercae:\n%s", mod_name, e.what());
+        klog(interface_error, INTFNAME "%s: error constructing intercae:\n%s", mod_name, e.what());
         goto ErrorExit;
     }
 

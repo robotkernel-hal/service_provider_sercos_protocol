@@ -48,6 +48,7 @@ class service_id {
             size_t val_len;
         } data;
 
+        std::string status;
     private:
         std::string mod_name;
         int slave_id;

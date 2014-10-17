@@ -13,3 +13,6 @@ uint32_t    attr
 char*       min_value
 char*       max_value
 char*       value
+
+char*       error_message
+
