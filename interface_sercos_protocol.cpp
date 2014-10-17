@@ -99,14 +99,22 @@ int sercos_protocol::on_read_id(ln::service_request& req,
         svc.resp.attr = *(uint32_t *)&id.data.attr;
 
     if (svc.req.elements & SSE_MINVAL) {
-        string tmp = id.min_val_to_string();
-        svc.resp.min_value = strdup(tmp.c_str());
+        if (id.data.attr.datatype == SSA_DATATYPE_CHARSET)
+            svc.resp.min_value = strdup("N/A");
+        else {
+            string tmp = id.min_val_to_string();
+            svc.resp.min_value = strdup(tmp.c_str());
+        }
         svc.resp.min_value_len = strlen(svc.resp.min_value);
     }
     
     if (svc.req.elements & SSE_MAXVAL) {
-        string tmp = id.max_val_to_string();
-        svc.resp.max_value = strdup(tmp.c_str());
+        if (id.data.attr.datatype == SSA_DATATYPE_CHARSET)
+            svc.resp.max_value = strdup("N/A");
+        else {
+            string tmp = id.max_val_to_string();
+            svc.resp.max_value = strdup(tmp.c_str());
+        }
         svc.resp.max_value_len = strlen(svc.resp.max_value);
     }
 

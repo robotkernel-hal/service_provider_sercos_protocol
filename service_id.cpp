@@ -178,7 +178,7 @@ void service_id::_update_val(sercos_service_element element, uint16_t ** ans, si
             break;
         }
         default:
-            klog(verbose, "switch does not match any case %d\n", data.attr.datalength);
+            klog(interface_warning, "switch does not match any case %d\n", data.attr.datalength);
             break;
     }
 }
@@ -189,20 +189,37 @@ service_id::service_id(string mod_name, int slave_id, int idn, int elements)
 
     status = "";
 
-    if (elements & SSE_STRC)
-        _update_structure();
-    if (elements & SSE_NAME)
+    klog(interface_verbose, "reading slave_id %d, idn %d, elements 0x%X\n", slave_id, idn, elements);
+
+//  reading struct does not work on lbr ?
+//    if (elements & SSE_STRC) {
+//        klog(interface_verbose, "   updating strc\n");
+//        _update_structure();
+//    } 
+    if (elements & SSE_NAME) {
+        klog(interface_verbose, "   updating name\n");
         _update_name();
-    if (elements & SSE_UNIT) 
+    }
+    if (elements & SSE_UNIT) {
+        klog(interface_verbose, "   updating unit\n");
         _update_unit();
-    if (elements & (SSE_ATTR | SSE_DATA | SSE_MAXVAL | SSE_MINVAL))
+    }
+    if (elements & (SSE_ATTR | SSE_DATA | SSE_MAXVAL | SSE_MINVAL)) {
+        klog(interface_verbose, "   updating attr\n");
         _update_attr();
-    if (elements & SSE_MINVAL)
+    }
+    if (elements & SSE_MINVAL) {
+        klog(interface_verbose, "   updating min_val\n");
         _update_val(SSE_MINVAL, &data.min_val, &data.min_val_len);
-    if (elements & SSE_MAXVAL)
+    }
+    if (elements & SSE_MAXVAL) {
+        klog(interface_verbose, "   updating max_val\n");
         _update_val(SSE_MAXVAL, &data.max_val, &data.max_val_len);
-    if (elements & SSE_DATA)
+    }
+    if (elements & SSE_DATA) {
+        klog(interface_verbose, "   updating value\n");
         _update_val(SSE_DATA, &data.val, &data.val_len);
+    }
 }
 
 service_id::~service_id() {

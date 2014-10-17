@@ -25,4 +25,6 @@ ln_messages.h: Makefile $(LN_MESSAGES)
 install-exec-hook:
 	mkdir -p $(prefix)/share/message_definitions
 	cp -r $(srcdir)/message_definitions/* $(prefix)/share/message_definitions/
+	mkdir -p $(prefix)/share/ln
+	cp -r $(srcdir)/share/ln/* $(prefix)/share/ln/
 	
