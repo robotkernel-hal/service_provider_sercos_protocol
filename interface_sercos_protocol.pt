@@ -1,6 +1,6 @@
 PTVERSION           = 2
 NAME                = interface_sercos_protocol
-VERSION             = 3.0.3
+VERSION             = 3.0.4
 DESCRIPTION         = robotkernel sercos protocol interface
 MAINTAINER          = Robert Burger <robert.burger@dlr.de>
 DOCUMENTATION       = https://rmintra01.robotic.dlr.de/wiki/robotkernel/interface_sercos_protocol
