@@ -1,9 +1,11 @@
-//! robotkernel module class
+//! robotkernel interface sercos protocol
 /*!
  * author: Robert Burger
  *
  * $Id$
  */
+
+// vim: tabstop=4 softtabstop=4 shiftwidth=4 expandtab:
 
 /*
  * This file is part of robotkernel.
@@ -23,7 +25,11 @@
  */
 
 #include "interface_sercos_protocol.h"
+#include "service_id.h"
+
 #include "robotkernel/exceptions.h"
+#include "robotkernel/kernel.h"
+
 #undef BUILD_DATE
 #undef BUILD_HOST
 #undef PACKAGE
@@ -41,6 +47,8 @@ using namespace interface;
 //! default construction
 /*!
  * \param mod_name module name to register for
+ * \param dev_name device name
+ * \parma slave_id module slave id
  */
 sercos_protocol::sercos_protocol(const std::string& mod_name, 
         const std::string& dev_name, const int& slave_id) 
@@ -58,6 +66,7 @@ sercos_protocol::sercos_protocol(const std::string& mod_name,
     register_set_command(k.clnt, base.str() + "sercos_protocol.set_command");
 }
 
+//! service read id callback
 int sercos_protocol::on_read_id(ln::service_request& req, 
         ln_service_robotkernel_sercos_protocol_read_id& svc) {
     service_id id(_mod_name, _slave_id, svc.req.idn, svc.req.elements);
@@ -136,7 +145,9 @@ int sercos_protocol::on_read_id(ln::service_request& req,
     return 0;
 }
 
-int sercos_protocol::on_write_id(ln::service_request& req, ln_service_robotkernel_sercos_protocol_write_id& svc) {
+//! service write id callback
+int sercos_protocol::on_write_id(ln::service_request& req, 
+        ln_service_robotkernel_sercos_protocol_write_id& svc) {
     string value(svc.req.value, svc.req.value_len);
 
     // get service id and read attribute
@@ -185,8 +196,10 @@ int sercos_protocol::on_write_id(ln::service_request& req, ln_service_robotkerne
     req.respond();
     return 0;
 }
-        
-int sercos_protocol::on_set_command(ln::service_request& req, ln_service_robotkernel_sercos_protocol_set_command& svc) {
+
+//! service set command callback
+int sercos_protocol::on_set_command(ln::service_request& req, 
+        ln_service_robotkernel_sercos_protocol_set_command& svc) {
     sercos_set_command_t cmd = { _slave_id, svc.req.cmd };
 
     // execute procedure command    

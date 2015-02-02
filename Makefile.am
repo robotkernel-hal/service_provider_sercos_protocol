@@ -10,10 +10,9 @@ libinterface_sercos_protocol_la_CXXFLAGS = -fno-strict-aliasing -Wall -I$(top_sr
 										   -I$(top_builddir) @ROBOTKERNEL_CFLAGS@
 libinterface_sercos_protocol_la_LDFLAGS  = -Wall -release $(PACKAGE_VERSION)
 
-VPATH = $(srcdir):$(srcdir)/message_definitions
+VPATH = $(srcdir):$(srcdir)/share/message_definitions
 
-LN_MESSAGES = \
-			  robotkernel/sercos_protocol/read_id \
+LN_MESSAGES = robotkernel/sercos_protocol/read_id \
 			  robotkernel/sercos_protocol/write_id \
 			  robotkernel/sercos_protocol/set_command
 
@@ -23,8 +22,6 @@ ln_messages.h: Makefile $(LN_MESSAGES)
 	touch $@
 
 install-exec-hook:
-	mkdir -p $(prefix)/share/message_definitions
-	cp -r $(srcdir)/message_definitions/* $(prefix)/share/message_definitions/
-	mkdir -p $(prefix)/share/ln
-	cp -r $(srcdir)/share/ln/* $(prefix)/share/ln/
+	mkdir -p $(prefix)/share
+	-cp -rf $(srcdir)/share/* $(prefix)/share/
 	

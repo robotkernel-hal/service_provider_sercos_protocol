@@ -1,9 +1,11 @@
-//! robotkernel module class
+//! robotkernel interface sercos protocol
 /*!
  * author: Robert Burger
  *
  * $Id$
  */
+
+// vim: tabstop=4 softtabstop=4 shiftwidth=4 expandtab:
 
 /*
  * This file is part of robotkernel.
