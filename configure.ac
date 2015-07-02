@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.63])
 AC_INIT([interface_sercos_protocol], [3.1.1], [robert.burger@dlr.de])
-AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -51,11 +51,9 @@ AC_SUBST(ARCH_CFLAGS)
 PKG_CHECK_MODULES([ROBOTKERNEL], [robotkernel], [], [
                     RMPM_CHECK_MODULES([ROBOTKERNEL], [robotkernel.robotkernel])
                    ])
-LN_BASE=$(env -i "$srcdir"/scripts/get_ln_base.py $ROBOTKERNEL_DEPENDS)
-LN_GENERATE_ARGS='-md_dir $(srcdir)/share/message_definitions'
+LN_BASE=$(env -i "$srcdir"/scripts/get_ln_base.py $ROBOTKERNEL_C_DEPENDS)
+LN_GENERATE_ARGS='-md_dir $(srcdir)/share/ln/message_definitions'
 LN_GENERATE="env -i $LN_BASE/scripts/ln_generate $LN_GENERATE_ARGS"
-
-AC_SUBST(LN_BASE)
 AC_SUBST(LN_GENERATE)
 
 AC_DEFINE_UNQUOTED(BUILD_DATE,"`date -u`",[Date (usually date of extraction from SVN).])

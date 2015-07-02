@@ -1,4 +1,4 @@
-ACLOCAL_AMFLAGS = -I m4 
+ACLOCAL_AMFLAGS = -I m4 -I scripts/m4
 
 libdir = $(prefix)/lib
 lib_LTLIBRARIES = libinterface_sercos_protocol.la
@@ -10,7 +10,7 @@ libinterface_sercos_protocol_la_CXXFLAGS = -fno-strict-aliasing -Wall -I$(top_sr
 										   -I$(top_builddir) @ROBOTKERNEL_CFLAGS@
 libinterface_sercos_protocol_la_LDFLAGS  = -Wall -release $(PACKAGE_VERSION)
 
-VPATH = $(srcdir):$(srcdir)/share/message_definitions
+VPATH = $(srcdir):$(srcdir)/share/ln/message_definitions
 
 LN_MESSAGES = robotkernel/sercos_protocol/read_id \
 			  robotkernel/sercos_protocol/write_id \
