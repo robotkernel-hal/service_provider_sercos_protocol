@@ -12,7 +12,7 @@ requires_version 0.2.43
 defines
 interface_sercos_protocol_base: %(dirname %(dirname %(CURDIR)))
 interface_sercos_protocol_libdir: %(interface_sercos_protocol_base)/lib/$(ARCH)
-add_message_definition_dir: %(interface_sercos_protocol_base)/share/message_definitions 
+add_message_definition_dir: %(interface_sercos_protocol_base)/share/ln/message_definitions 
 
 ifndef rk_interfaces: rk_interfaces: ""
 rk_interfaces: %(rk_interfaces):%(interface_sercos_protocol_libdir)
