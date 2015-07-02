@@ -258,6 +258,24 @@ void intf_unregister(INTERFACE_HANDLE hdl) {
         delete s;
 }
 
+#define INTERFACE_SERCOS_PROTOCOL_GROUP_NAME    "group_interface_sercos_protocol"
+#define INTERFACE_SERCOS_PROTOCOL_POOL_NAME     "pool_interface_sercos_protocol"
+#define INTERFACE_SERCOS_PROTOCOL_POOL_THREADS  8
+
+void __attribute__ ((constructor)) interface_sercos_protocol_init(void) {
+    kernel *k = kernel::get_instance();
+    if (!k->clnt)
+        return;
+
+    k->clnt->set_max_threads(INTERFACE_SERCOS_PROTOCOL_POOL_NAME, 
+            INTERFACE_SERCOS_PROTOCOL_POOL_THREADS);
+    k->clnt->handle_service_group_in_thread_pool(INTERFACE_SERCOS_PROTOCOL_GROUP_NAME,
+            INTERFACE_SERCOS_PROTOCOL_POOL_NAME);
+}
+
+void __attribute__ ((destructor)) interface_sercos_protocol_fini(void) {
+}
+
 #if 0
 {
 #endif
