@@ -234,7 +234,7 @@ unsigned_T *service_id::_string_to_data_fix(T *val) {
             *uvalue = _buf_to_val<unsigned int, T>(data.attr.decimalpoint, val);
             break; 
         case SSA_DATATYPE_FLOAT: 
-            *fvalue = _buf_to_val<double, T>(data.attr.decimalpoint, val);
+            *fvalue = (float_T)_buf_to_val<double, T>(data.attr.decimalpoint, val);
             break;
         default: 
             break;
@@ -266,7 +266,7 @@ unsigned_T *service_id::_string_to_data_var(std::list<T *>& lst) {
                 uvalue[idx] = _buf_to_val<unsigned int, T>(data.attr.decimalpoint, elem);
                 break; 
             case SSA_DATATYPE_FLOAT: 
-                fvalue[idx] = _buf_to_val<double, T>(data.attr.decimalpoint, elem);
+                fvalue[idx] = (float_T)_buf_to_val<double, T>(data.attr.decimalpoint, elem);
                 break;
             default: 
                 break;

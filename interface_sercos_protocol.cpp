@@ -44,6 +44,15 @@ using namespace std;
 using namespace robotkernel;
 using namespace interface_sercos_protocol;
         
+#if defined __VXWORKS__ || defined __QNX__
+#ifndef min
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#endif
+
+#define strnlen(a, b) \
+    min(strlen((a)), (b))
+#endif
+
 //! default construction
 /*!
  * \param mod_name module name to register for
