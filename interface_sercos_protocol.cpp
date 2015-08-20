@@ -42,7 +42,7 @@
 
 using namespace std;
 using namespace robotkernel;
-using namespace interface;
+using namespace interface_sercos_protocol;
         
 //! default construction
 /*!
@@ -69,7 +69,14 @@ sercos_protocol::sercos_protocol(const std::string& mod_name,
 //! service read id callback
 int sercos_protocol::on_read_id(ln::service_request& req, 
         ln_service_robotkernel_sercos_protocol_read_id& svc) {
-    service_id id(_mod_name, _slave_id, svc.req.idn, svc.req.elements);
+    
+    if (service_ids.find(svc.req.idn) == service_ids.end()) {
+        service_ids[svc.req.idn] = new service_id(_mod_name, 
+                _slave_id, svc.req.idn, 0);
+    }
+
+    service_id& id = *service_ids[svc.req.idn];
+    id.update_elements(svc.req.elements);
 
     if (id.status != "") {
         // error occured
@@ -83,7 +90,8 @@ int sercos_protocol::on_read_id(ln::service_request& req,
     // get id name 
     if (svc.req.elements & SSE_NAME) {
         svc.resp.name = &id.data.name[4];
-        svc.resp.name_len = ((uint16_t *)id.data.name)[0];
+        svc.resp.name_len = strnlen(svc.resp.name, 
+                ((uint16_t *)id.data.name)[0]);
     }
     
     // read structure
@@ -149,9 +157,14 @@ int sercos_protocol::on_read_id(ln::service_request& req,
 int sercos_protocol::on_write_id(ln::service_request& req, 
         ln_service_robotkernel_sercos_protocol_write_id& svc) {
     string value(svc.req.value, svc.req.value_len);
+    
+    if (service_ids.find(svc.req.idn) == service_ids.end()) {
+        service_ids[svc.req.idn] = new service_id(_mod_name, 
+                _slave_id, svc.req.idn, 0);
+    }
 
-    // get service id and read attribute
-    service_id id(_mod_name, _slave_id, svc.req.idn, SSE_ATTR);
+    service_id& id = *service_ids[svc.req.idn];
+    id.update_elements(SSE_ATTR);
 
     if (svc.req.elements & SSE_NAME) {
 //        svc.resp.name = &id.data.name[4];
@@ -193,7 +206,17 @@ int sercos_protocol::on_write_id(ln::service_request& req,
 
     id.write_elements(svc.req.elements);
 
+    if (id.status != "") {
+        // error occured
+        svc.resp.error_message = strdup(id.status.c_str());
+        svc.resp.error_message_len = strlen(svc.resp.error_message);
+    }
+
     req.respond();
+
+    if (svc.resp.error_message)
+        free(svc.resp.error_message);
+
     return 0;
 }
 
@@ -203,10 +226,20 @@ int sercos_protocol::on_set_command(ln::service_request& req,
     sercos_set_command_t cmd = { _slave_id, svc.req.cmd };
 
     // execute procedure command    
-    svc.resp.state = kernel::request_cb(_mod_name.c_str(), 
+    int ret = kernel::request_cb(_mod_name.c_str(), 
             MOD_REQUEST_SERCOS_SET_COMMAND, (void *)&cmd);
 
+    if (ret != 0) {
+        // error occured
+        svc.resp.error_message = strdup("executing procedure command failed");
+        svc.resp.error_message_len = strlen(svc.resp.error_message);
+    }
+
     req.respond();
+    
+    if (svc.resp.error_message)
+        free(svc.resp.error_message);
+
     return 0;
 }
 

@@ -31,8 +31,9 @@
 
 using namespace std;
 using namespace robotkernel;
+using namespace interface_sercos_protocol;
 
-int service_id::_read(sercos_service_element element, uint16_t *buf, size_t buflen) {
+int service_id::_read(const sercos_service_element element, uint16_t *buf, const size_t buflen) {
     sercos_service_transfer sst;
     sst.slave_id = slave_id;
     sst.idn = idn;
@@ -68,9 +69,15 @@ void service_id::_update_name() {
     }
 
     ret = _read(SSE_NAME, (uint16_t *)&data.name[0], (size[0] + 4) / 2);
-    if (ret)
+    if (ret) {
+        klog(interface_warning, "reading id name failed. "
+                "service transfer error code %d", ret);
+
         status = format_string("reading id name failed. "
                 "service transfer error code %d", ret);
+    }
+
+    data.name[size[0] + 4] = '\0';
 }
 
 // get id structure
@@ -112,9 +119,11 @@ void service_id::_update_attr() {
 
 void service_id::_update_val(sercos_service_element element, uint16_t ** ans, size_t *len) {
     int ret;
+//    printf("update_val: element %X, *ans %X, *len %d, lien %d\n", element, *ans, *len, __LINE__);
 
     switch (data.attr.datalength) {
         case SSA_DATALENGTH_2BYTEFIX:
+//    printf("update_val: element %X, *ans %X, *len %d, lien %d\n", element, *ans, *len, __LINE__);
             if (*ans) {
                 delete[] *ans;
                 *ans = NULL;
@@ -128,6 +137,7 @@ void service_id::_update_val(sercos_service_element element, uint16_t ** ans, si
                         "service transfer error code %d", ret);
             break;
         case SSA_DATALENGTH_4BYTEFIX:
+//    printf("update_val: element %X, *ans %X, *len %d, lien %d\n", element, *ans, *len, __LINE__);
             if (*ans) {
                 delete[] *ans;
                 *ans = NULL;
@@ -141,6 +151,7 @@ void service_id::_update_val(sercos_service_element element, uint16_t ** ans, si
                         "service transfer error code %d", ret);
             break;
         case SSA_DATALENGTH_8BYTEFIX:
+//    printf("update_val: element %X, *ans %X, *len %d, lien %d\n", element, *ans, *len, __LINE__);
             if (*ans) {
                 delete[] *ans;
                 *ans = NULL;
@@ -157,23 +168,36 @@ void service_id::_update_val(sercos_service_element element, uint16_t ** ans, si
         case SSA_DATALENGTH_2BYTEVAR:
         case SSA_DATALENGTH_4BYTEVAR:
         case SSA_DATALENGTH_8BYTEVAR: {
+//    printf("update_val: element %X, *ans %X, *len %d, lien %d\n", element, *ans, *len, __LINE__);
             uint16_t size[2];
+//            printf("%s: %d\n", __FILE__, __LINE__);
             ret = _read(element, &size[0], 2);
+//    printf("update_val: element %X, *ans %X, *len %d, lien %d\n", element, *ans, *len, __LINE__);
+//            printf("%s: %d\n", __FILE__, __LINE__);
             if (ret) {
                 status = format_string("reading id value size failed. "
                         "service transfer error code %d", ret);
                 break;
             }
+//            printf("%s: %d\n", __FILE__, __LINE__);
 
+//            printf("%s: %d\n", __FILE__, __LINE__);
             if (*ans) {
+//            printf("%s: %d\n", __FILE__, __LINE__);
                 delete[] *ans;
+//            printf("%s: %d\n", __FILE__, __LINE__);
                 *ans = NULL;
             }
+//            printf("%s: %d\n", __FILE__, __LINE__);
 
             *ans = new uint16_t[(size[0] + 4 + 1) / 2]();
+//            printf("%s: %d\n", __FILE__, __LINE__);
             *len = size[0] + 4;
+//            printf("%s: %d\n", __FILE__, __LINE__);
             memset(*ans, 0, *len);
+//            printf("%s: %d\n", __FILE__, __LINE__);
             ret = _read(element, *ans, (size[0] + 4) / 2);
+//            printf("%s: %d\n", __FILE__, __LINE__);
             if (ret)
                 status = format_string("reading id value failed. "
                         "service transfer error code %d", ret);
@@ -189,6 +213,10 @@ service_id::service_id(string mod_name, int slave_id, int idn, int elements)
     : mod_name(mod_name), slave_id(slave_id), idn(idn), elements(elements) {
     memset(&data, 0, sizeof(data));
 
+    data.min_val = NULL;
+    data.max_val = NULL;
+    data.val = NULL;
+
     status = "";
 
     klog(interface_verbose, "reading slave_id %d, idn %d, elements 0x%X\n", slave_id, idn, elements);
@@ -198,6 +226,12 @@ service_id::service_id(string mod_name, int slave_id, int idn, int elements)
 //        klog(interface_verbose, "   updating strc\n");
 //        _update_structure();
 //    } 
+    data.name_valid = data.unit_valid = data.attr_valid =
+        data.min_val_valid = data.max_val_valid = false;
+
+    update_elements(elements);
+
+    /*
     if (elements & SSE_NAME) {
         klog(interface_verbose, "   updating name\n");
         _update_name();
@@ -221,7 +255,8 @@ service_id::service_id(string mod_name, int slave_id, int idn, int elements)
     if (elements & SSE_DATA) {
         klog(interface_verbose, "   updating value\n");
         _update_val(SSE_DATA, &data.val, &data.val_len);
-    }
+    }*/
+
 }
 
 service_id::~service_id() {

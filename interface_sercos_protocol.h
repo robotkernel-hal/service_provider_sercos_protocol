@@ -27,13 +27,15 @@
 #ifndef __INTERFACE_SERCOS_PROTOCOL_H__
 #define __INTERFACE_SERCOS_PROTOCOL_H__
 
+#include "service_id.h"
+
 #define LN_UNREGISTER_SERVICE_IN_BASE_DETOR  
 #include "ln_messages.h"
 #undef LN_UNREGISTER_SERVICE_IN_BASE_DETOR
 
 #define INTFNAME "[interface_sercos_protocol] "
 
-namespace interface {
+namespace interface_sercos_protocol {
     
 class sercos_protocol : 
     public ln_service_read_id_base,
@@ -43,6 +45,9 @@ class sercos_protocol :
     const std::string _mod_name;
     const std::string _dev_name;
     const int _slave_id;
+
+    typedef std::map<int, service_id *> id_map_t;
+    id_map_t service_ids;
 
     public:
         //! default construction

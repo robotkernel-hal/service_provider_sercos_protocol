@@ -13,4 +13,4 @@ char*       max_value
 char*       value
 
 response 
-int         status
+char*       error_message

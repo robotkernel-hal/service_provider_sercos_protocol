@@ -32,21 +32,26 @@
 #include "module_intf.h"
 #include <list>
 
-namespace robotkernel {
+namespace interface_sercos_protocol {
 
 class service_id {
     public:
         struct {
             uint16_t structure;
             char name[65];
-            size_t name_len;            
+            size_t name_len;
+            bool name_valid;
             char unit[16];
             size_t unit_len;
+            bool unit_valid;
             sercos_service_attribute attr;
+            bool attr_valid;
             uint16_t *min_val;
             size_t min_val_len;
+            bool min_val_valid;
             uint16_t *max_val;
             size_t max_val_len;
+            bool max_val_valid;
             uint16_t *val;
             size_t val_len;
         } data;
@@ -59,7 +64,7 @@ class service_id {
         int elements;
 
         // read/write service id 
-        int _read(sercos_service_element element, uint16_t *buf, size_t buflen);
+        int _read(const sercos_service_element element, uint16_t *buf, const size_t buflen);
         int _write(sercos_service_element element, uint16_t *buf, size_t buflen);
         
         // get id name
@@ -115,6 +120,38 @@ class service_id {
 
         //! write elements to sercos joints
         void write_elements(int elements);
+        
+        void update_elements(int elements) {
+            if (!data.name_valid && (elements & SSE_NAME)) {
+                klog(robotkernel::interface_verbose, "   updating name\n");
+                _update_name();
+                data.name_valid = true;
+            }
+            if (!data.unit_valid && (elements & SSE_UNIT)) {
+                klog(robotkernel::interface_verbose, "   updating unit\n");
+                _update_unit();
+                data.unit_valid = true;
+            }
+            if (!data.attr_valid && (elements & (SSE_ATTR | SSE_DATA | SSE_MAXVAL | SSE_MINVAL))) {
+                klog(robotkernel::interface_verbose, "   updating attr\n");
+                _update_attr();
+                data.attr_valid = true;
+            }
+            if (!data.min_val_valid && (elements & SSE_MINVAL)) {
+                klog(robotkernel::interface_verbose, "   updating min_val\n");
+                _update_val(SSE_MINVAL, &data.min_val, &data.min_val_len);
+                data.min_val_valid = true;
+            }
+            if (!data.max_val_valid && (elements & SSE_MAXVAL)) {
+                klog(robotkernel::interface_verbose, "   updating max_val\n");
+                _update_val(SSE_MAXVAL, &data.max_val, &data.max_val_len);
+                data.max_val_valid = true;
+            }
+            if (elements & SSE_DATA) {
+                klog(robotkernel::interface_verbose, "   updating value\n");
+                _update_val(SSE_DATA, &data.val, &data.val_len);
+            }
+        }
 };
         
 template <typename T>

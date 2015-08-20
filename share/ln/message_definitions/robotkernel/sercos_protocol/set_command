@@ -1,7 +1,7 @@
 service
 
 request
-int32_t cmd
+int32_t     cmd
 
 response
-int     state
+char*       error_message
