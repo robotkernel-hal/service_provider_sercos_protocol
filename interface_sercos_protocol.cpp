@@ -30,15 +30,7 @@
 #include "robotkernel/exceptions.h"
 #include "robotkernel/kernel.h"
 
-#undef BUILD_DATE
-#undef BUILD_HOST
-#undef PACKAGE
-#undef PACKAGE_NAME
-#undef PACKAGE_STRING
-#undef PACKAGE_TARNAME
-#undef PACKAGE_VERSION
-#undef VERSION
-#include "config.h"
+INTERFACE_DEF(sercos_protocol, interface_sercos_protocol::sercos_protocol)
 
 using namespace std;
 using namespace robotkernel;
@@ -55,20 +47,17 @@ using namespace interface_sercos_protocol;
 
 //! default construction
 /*!
- * \param mod_name module name to register for
- * \param dev_name device name
- * \parma slave_id module slave id
+ * \param node configuration node
  */
-sercos_protocol::sercos_protocol(const std::string& mod_name, 
-        const std::string& dev_name, const int& slave_id) 
-    : _mod_name(mod_name), _dev_name(dev_name), _slave_id(slave_id) {
+sercos_protocol::sercos_protocol(const YAML::Node& node) 
+    : interface_base("sercos_protocol", node) {
     kernel& k = *kernel::get_instance();
     if (!k.clnt)
         throw str_exception("[interface_sercos_protocol|%s] no ln_connection!\n", 
                 mod_name.c_str());
     
     stringstream base;
-    base << k.clnt->name << "." << _mod_name << "." << _dev_name << ".";
+    base << k.clnt->name << "." << mod_name << "." << dev_name << ".";
 
     register_read_id(k.clnt, base.str() + "sercos_protocol.read_id");
     register_write_id(k.clnt, base.str() + "sercos_protocol.write_id");
@@ -80,8 +69,8 @@ int sercos_protocol::on_read_id(ln::service_request& req,
         ln_service_robotkernel_sercos_protocol_read_id& svc) {
     
     if (service_ids.find(svc.req.idn) == service_ids.end()) {
-        service_ids[svc.req.idn] = new service_id(_mod_name, 
-                _slave_id, svc.req.idn, 0);
+        service_ids[svc.req.idn] = new service_id(mod_name, 
+                slave_id, svc.req.idn, 0);
     }
 
     service_id& id = *service_ids[svc.req.idn];
@@ -168,8 +157,8 @@ int sercos_protocol::on_write_id(ln::service_request& req,
     string value(svc.req.value, svc.req.value_len);
     
     if (service_ids.find(svc.req.idn) == service_ids.end()) {
-        service_ids[svc.req.idn] = new service_id(_mod_name, 
-                _slave_id, svc.req.idn, 0);
+        service_ids[svc.req.idn] = new service_id(mod_name, 
+                slave_id, svc.req.idn, 0);
     }
 
     service_id& id = *service_ids[svc.req.idn];
@@ -232,10 +221,10 @@ int sercos_protocol::on_write_id(ln::service_request& req,
 //! service set command callback
 int sercos_protocol::on_set_command(ln::service_request& req, 
         ln_service_robotkernel_sercos_protocol_set_command& svc) {
-    sercos_set_command_t cmd = { _slave_id, svc.req.cmd };
+    sercos_set_command_t cmd = { slave_id, svc.req.cmd };
 
     // execute procedure command    
-    int ret = kernel::request_cb(_mod_name.c_str(), 
+    int ret = kernel::request_cb(mod_name.c_str(), 
             MOD_REQUEST_SERCOS_SET_COMMAND, (void *)&cmd);
 
     if (ret != 0) {
@@ -251,77 +240,4 @@ int sercos_protocol::on_set_command(ln::service_request& req,
 
     return 0;
 }
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-#if 0
-}
-#endif
-
-//! interface register
-/*!
- * \param mod_name module name to register
- * \return interface handle
- */
-INTERFACE_HANDLE intf_register(const char *mod_name, const char *dev_name, int slave_id) {
-    sercos_protocol *s = NULL;
-
-    klog(interface_info, INTFNAME "%s: build by: " BUILD_USER "@" BUILD_HOST "\n", mod_name);
-    klog(interface_info, INTFNAME "%s: build date: " BUILD_DATE "\n", mod_name);
-
-    // parsing sercos ring configuration
-    try {
-        s = new sercos_protocol(string(mod_name), string(dev_name), slave_id);
-    } catch(exception& e) {
-        klog(interface_error, INTFNAME "%s: error constructing intercae:\n%s", mod_name, e.what());
-        goto ErrorExit;
-    }
-
-    return (INTERFACE_HANDLE)s;
-
-ErrorExit:
-    if (s)
-        delete s;
-
-    return (INTERFACE_HANDLE)NULL;
-}
-
-//! interface unregister
-/*!
- * \param hdl interface handle
- */
-void intf_unregister(INTERFACE_HANDLE hdl) {
-    // cast struct
-    sercos_protocol *s = (sercos_protocol *)hdl;
-
-    if (s)
-        delete s;
-}
-
-#define INTERFACE_SERCOS_PROTOCOL_GROUP_NAME    "group_interface_sercos_protocol"
-#define INTERFACE_SERCOS_PROTOCOL_POOL_NAME     "pool_interface_sercos_protocol"
-#define INTERFACE_SERCOS_PROTOCOL_POOL_THREADS  8
-
-void __attribute__ ((constructor)) interface_sercos_protocol_init(void) {
-    kernel *k = kernel::get_instance();
-    if (!k->clnt)
-        return;
-
-    k->clnt->set_max_threads(INTERFACE_SERCOS_PROTOCOL_POOL_NAME, 
-            INTERFACE_SERCOS_PROTOCOL_POOL_THREADS);
-    k->clnt->handle_service_group_in_thread_pool(INTERFACE_SERCOS_PROTOCOL_GROUP_NAME,
-            INTERFACE_SERCOS_PROTOCOL_POOL_NAME);
-}
-
-void __attribute__ ((destructor)) interface_sercos_protocol_fini(void) {
-}
-
-#if 0
-{
-#endif
-#ifdef __cplusplus
-}
-#endif
 

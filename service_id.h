@@ -123,32 +123,26 @@ class service_id {
         
         void update_elements(int elements) {
             if (!data.name_valid && (elements & SSE_NAME)) {
-                klog(robotkernel::interface_verbose, "   updating name\n");
                 _update_name();
                 data.name_valid = true;
             }
             if (!data.unit_valid && (elements & SSE_UNIT)) {
-                klog(robotkernel::interface_verbose, "   updating unit\n");
                 _update_unit();
                 data.unit_valid = true;
             }
             if (!data.attr_valid && (elements & (SSE_ATTR | SSE_DATA | SSE_MAXVAL | SSE_MINVAL))) {
-                klog(robotkernel::interface_verbose, "   updating attr\n");
                 _update_attr();
                 data.attr_valid = true;
             }
             if (!data.min_val_valid && (elements & SSE_MINVAL)) {
-                klog(robotkernel::interface_verbose, "   updating min_val\n");
                 _update_val(SSE_MINVAL, &data.min_val, &data.min_val_len);
                 data.min_val_valid = true;
             }
             if (!data.max_val_valid && (elements & SSE_MAXVAL)) {
-                klog(robotkernel::interface_verbose, "   updating max_val\n");
                 _update_val(SSE_MAXVAL, &data.max_val, &data.max_val_len);
                 data.max_val_valid = true;
             }
             if (elements & SSE_DATA) {
-                klog(robotkernel::interface_verbose, "   updating value\n");
                 _update_val(SSE_DATA, &data.val, &data.val_len);
             }
         }

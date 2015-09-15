@@ -28,6 +28,7 @@
 #define __INTERFACE_SERCOS_PROTOCOL_H__
 
 #include "service_id.h"
+#include "robotkernel/interface_base.h"
 
 #define LN_UNREGISTER_SERVICE_IN_BASE_DETOR  
 #include "ln_messages.h"
@@ -38,26 +39,20 @@
 namespace interface_sercos_protocol {
     
 class sercos_protocol : 
+    public robotkernel::interface_base, 
     public ln_service_read_id_base,
     public ln_service_write_id_base,
     public ln_service_set_command_base 
 {
-    const std::string _mod_name;
-    const std::string _dev_name;
-    const int _slave_id;
-
     typedef std::map<int, service_id *> id_map_t;
     id_map_t service_ids;
 
     public:
         //! default construction
         /*!
-         * \param mod_name module name to register for
-         * \param dev_name device name
-         * \parma slave_id module slave id
+         * \param node configuration node
          */
-        sercos_protocol(const std::string& mod_name, 
-                const std::string& dev_name, const int& slave_id);
+        sercos_protocol(const YAML::Node& node);
 
         //! service read id callback
         int on_read_id(ln::service_request& req, 

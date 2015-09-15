@@ -70,9 +70,6 @@ void service_id::_update_name() {
 
     ret = _read(SSE_NAME, (uint16_t *)&data.name[0], (size[0] + 4) / 2);
     if (ret) {
-        klog(interface_warning, "reading id name failed. "
-                "service transfer error code %d", ret);
-
         status = format_string("reading id name failed. "
                 "service transfer error code %d", ret);
     }
@@ -119,11 +116,9 @@ void service_id::_update_attr() {
 
 void service_id::_update_val(sercos_service_element element, uint16_t ** ans, size_t *len) {
     int ret;
-//    printf("update_val: element %X, *ans %X, *len %d, lien %d\n", element, *ans, *len, __LINE__);
 
     switch (data.attr.datalength) {
         case SSA_DATALENGTH_2BYTEFIX:
-//    printf("update_val: element %X, *ans %X, *len %d, lien %d\n", element, *ans, *len, __LINE__);
             if (*ans) {
                 delete[] *ans;
                 *ans = NULL;
@@ -137,7 +132,6 @@ void service_id::_update_val(sercos_service_element element, uint16_t ** ans, si
                         "service transfer error code %d", ret);
             break;
         case SSA_DATALENGTH_4BYTEFIX:
-//    printf("update_val: element %X, *ans %X, *len %d, lien %d\n", element, *ans, *len, __LINE__);
             if (*ans) {
                 delete[] *ans;
                 *ans = NULL;
@@ -151,7 +145,6 @@ void service_id::_update_val(sercos_service_element element, uint16_t ** ans, si
                         "service transfer error code %d", ret);
             break;
         case SSA_DATALENGTH_8BYTEFIX:
-//    printf("update_val: element %X, *ans %X, *len %d, lien %d\n", element, *ans, *len, __LINE__);
             if (*ans) {
                 delete[] *ans;
                 *ans = NULL;
@@ -168,43 +161,31 @@ void service_id::_update_val(sercos_service_element element, uint16_t ** ans, si
         case SSA_DATALENGTH_2BYTEVAR:
         case SSA_DATALENGTH_4BYTEVAR:
         case SSA_DATALENGTH_8BYTEVAR: {
-//    printf("update_val: element %X, *ans %X, *len %d, lien %d\n", element, *ans, *len, __LINE__);
             uint16_t size[2];
-//            printf("%s: %d\n", __FILE__, __LINE__);
             ret = _read(element, &size[0], 2);
-//    printf("update_val: element %X, *ans %X, *len %d, lien %d\n", element, *ans, *len, __LINE__);
-//            printf("%s: %d\n", __FILE__, __LINE__);
             if (ret) {
                 status = format_string("reading id value size failed. "
                         "service transfer error code %d", ret);
                 break;
             }
-//            printf("%s: %d\n", __FILE__, __LINE__);
 
-//            printf("%s: %d\n", __FILE__, __LINE__);
             if (*ans) {
-//            printf("%s: %d\n", __FILE__, __LINE__);
                 delete[] *ans;
-//            printf("%s: %d\n", __FILE__, __LINE__);
                 *ans = NULL;
             }
-//            printf("%s: %d\n", __FILE__, __LINE__);
 
             *ans = new uint16_t[(size[0] + 4 + 1) / 2]();
-//            printf("%s: %d\n", __FILE__, __LINE__);
             *len = size[0] + 4;
-//            printf("%s: %d\n", __FILE__, __LINE__);
             memset(*ans, 0, *len);
-//            printf("%s: %d\n", __FILE__, __LINE__);
             ret = _read(element, *ans, (size[0] + 4) / 2);
-//            printf("%s: %d\n", __FILE__, __LINE__);
             if (ret)
                 status = format_string("reading id value failed. "
                         "service transfer error code %d", ret);
             break;
         }
         default:
-            klog(interface_warning, "switch does not match any case %d\n", data.attr.datalength);
+            status = format_string("switch does not match any case %d\n", 
+                    data.attr.datalength);
             break;
     }
 }
@@ -218,8 +199,6 @@ service_id::service_id(string mod_name, int slave_id, int idn, int elements)
     data.val = NULL;
 
     status = "";
-
-    klog(interface_verbose, "reading slave_id %d, idn %d, elements 0x%X\n", slave_id, idn, elements);
 
 //  reading struct does not work on lbr ?
 //    if (elements & SSE_STRC) {
