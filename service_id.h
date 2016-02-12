@@ -68,18 +68,18 @@ class service_id {
         int _write(sercos_service_element element, uint16_t *buf, size_t buflen);
         
         // get id name
-        void _update_name();
+        int _update_name();
 
         // get id structure
-        void _update_structure();
+        int _update_structure();
 
         // get unit
-        void _update_unit();
+        int _update_unit();
 
         // get idn attribute
-        void _update_attr();
+        int _update_attr();
 
-        void _update_val(sercos_service_element element, uint16_t ** ans, size_t *len);
+        int _update_val(sercos_service_element element, uint16_t ** ans, size_t *len);
 
         template <typename T>
         void _val_to_buf(char buf[32], const char *fmt_flt, const char *fmt_dec, 
@@ -122,18 +122,24 @@ class service_id {
         void write_elements(int elements);
         
         void update_elements(int elements) {
+            status = "";
+
             if (!data.name_valid && (elements & SSE_NAME)) {
-                _update_name();
-                data.name_valid = true;
+                if (!_update_name())
+                    data.name_valid = true;
             }
             if (!data.unit_valid && (elements & SSE_UNIT)) {
                 _update_unit();
                 data.unit_valid = true;
             }
+            
             if (!data.attr_valid && (elements & (SSE_ATTR | SSE_DATA | SSE_MAXVAL | SSE_MINVAL))) {
-                _update_attr();
-                data.attr_valid = true;
+                if (_update_attr() == 0)
+                    data.attr_valid = true;
+                else
+                    return;
             }
+
             if (!data.min_val_valid && (elements & SSE_MINVAL)) {
                 _update_val(SSE_MINVAL, &data.min_val, &data.min_val_len);
                 data.min_val_valid = true;

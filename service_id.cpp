@@ -58,14 +58,14 @@ int service_id::_write(sercos_service_element element, uint16_t *buf, size_t buf
 }
 
 // get id name
-void service_id::_update_name() {
+int service_id::_update_name() {
     int ret;
     uint16_t size[2];
     ret = _read(SSE_NAME, &size[0], 2);
     if (ret) {
         status = format_string("reading id name size failed. "
                 "service transfer error code %d", ret);
-        return;
+        return ret;
     }
 
     ret = _read(SSE_NAME, (uint16_t *)&data.name[0], (size[0] + 4) / 2);
@@ -75,26 +75,30 @@ void service_id::_update_name() {
     }
 
     data.name[size[0] + 4] = '\0';
+
+    return ret;
 }
 
 // get id structure
-void service_id::_update_structure() {
+int service_id::_update_structure() {
     int ret;
     ret = _read(SSE_STRC, (uint16_t *)&data.structure, 1);
     if (ret)
         status = format_string("reading id structure failed. "
                 "service transfer error code %d", ret);
+
+    return ret;
 }
 
 // get unit
-void service_id::_update_unit() {
+int service_id::_update_unit() {
     int ret;
     uint16_t size[2];
     ret = _read(SSE_UNIT, &size[0], 2);
     if (ret) {
         status = format_string("reading id unit size failed. "
                 "service transfer error code %d", ret);
-        return;
+        return ret;
     }
 
     if (size[0] <= 12) {
@@ -103,19 +107,25 @@ void service_id::_update_unit() {
             status = format_string("reading id unit failed. "
                     "service transfer error code %d", ret);
     }
+
+    return ret;
 }
 
 // get idn attribute
-void service_id::_update_attr() {
+int service_id::_update_attr() {
     int ret;
     ret = _read(SSE_ATTR, (uint16_t *)&data.attr, sizeof(data.attr) / 2);
     if (ret)
         status = format_string("reading id attr failed. "
                 "service transfer error code %d", ret);
+
+    return ret;
 }
 
-void service_id::_update_val(sercos_service_element element, uint16_t ** ans, size_t *len) {
-    int ret;
+int service_id::_update_val(sercos_service_element element, uint16_t ** ans, size_t *len) {
+    int ret = 0;
+    if (!data.attr_valid)
+        return ret;
 
     switch (data.attr.datalength) {
         case SSA_DATALENGTH_2BYTEFIX:
@@ -188,6 +198,8 @@ void service_id::_update_val(sercos_service_element element, uint16_t ** ans, si
                     data.attr.datalength);
             break;
     }
+
+    return ret;
 }
 
 service_id::service_id(string mod_name, int slave_id, int idn, int elements) 
@@ -198,44 +210,10 @@ service_id::service_id(string mod_name, int slave_id, int idn, int elements)
     data.max_val = NULL;
     data.val = NULL;
 
-    status = "";
-
-//  reading struct does not work on lbr ?
-//    if (elements & SSE_STRC) {
-//        klog(interface_verbose, "   updating strc\n");
-//        _update_structure();
-//    } 
     data.name_valid = data.unit_valid = data.attr_valid =
         data.min_val_valid = data.max_val_valid = false;
 
     update_elements(elements);
-
-    /*
-    if (elements & SSE_NAME) {
-        klog(interface_verbose, "   updating name\n");
-        _update_name();
-    }
-    if (elements & SSE_UNIT) {
-        klog(interface_verbose, "   updating unit\n");
-        _update_unit();
-    }
-    if (elements & (SSE_ATTR | SSE_DATA | SSE_MAXVAL | SSE_MINVAL)) {
-        klog(interface_verbose, "   updating attr\n");
-        _update_attr();
-    }
-    if (elements & SSE_MINVAL) {
-        klog(interface_verbose, "   updating min_val\n");
-        _update_val(SSE_MINVAL, &data.min_val, &data.min_val_len);
-    }
-    if (elements & SSE_MAXVAL) {
-        klog(interface_verbose, "   updating max_val\n");
-        _update_val(SSE_MAXVAL, &data.max_val, &data.max_val_len);
-    }
-    if (elements & SSE_DATA) {
-        klog(interface_verbose, "   updating value\n");
-        _update_val(SSE_DATA, &data.val, &data.val_len);
-    }*/
-
 }
 
 service_id::~service_id() {
