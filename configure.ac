@@ -15,6 +15,7 @@ if test -n "$SOURCE_ENV"; then
    echo "loading $SOURCE_ENV"
    source $SOURCE_ENV
 fi
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 
 # Checks for programs.
 AC_PROG_CXX
@@ -51,13 +52,9 @@ if test "$rmpm_host" == "arm-angstrom-linux-gnueabi"; then
 fi
 AC_SUBST(ARCH_CFLAGS)
 
-PKG_CHECK_MODULES([ROBOTKERNEL], [robotkernel], [], [
-                    RMPM_CHECK_MODULES([ROBOTKERNEL], [robotkernel.robotkernel])
-                   ])
-LN_BASE=$(env -i "$srcdir"/scripts/get_ln_base.py $ROBOTKERNEL_C_DEPENDS)
-LN_GENERATE_ARGS='-md_dir $(srcdir)/share/ln/message_definitions'
-LN_GENERATE="env -i $LN_BASE/scripts/ln_generate $LN_GENERATE_ARGS"
-AC_SUBST(LN_GENERATE)
+m4_esyscmd([scripts/m4_deps.py])
+
+RM_FIND_LN_FROM_ENV
 
 AC_DEFINE_UNQUOTED(BUILD_DATE,"`date -u`",[Date (usually date of extraction from SVN).])
 AC_DEFINE_UNQUOTED(BUILD_USER,"`whoami`",[User (usually user logged in on shell).])
