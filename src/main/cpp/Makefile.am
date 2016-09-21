@@ -5,15 +5,15 @@ BUILT_SOURCES = ln_messages.h
 CLEANFILES = ln_messages.h
 
 libinterface_sercos_protocol_la_SOURCES  = service_id.cpp interface_sercos_protocol.cpp
-libinterface_sercos_protocol_la_CXXFLAGS = -fno-strict-aliasing -Wall -I$(top_srcdir)/src \
-										   -I$(top_builddir) @ROBOTKERNEL_CFLAGS@ @YAML_CPP_CFLAGS@ @LIBSTRING_UTIL_CFLAGS@
+libinterface_sercos_protocol_la_CXXFLAGS = -fno-strict-aliasing -Wall -I$(srcdir) -I$(builddir) \
+                                           @ROBOTKERNEL_CFLAGS@ @YAML_CPP_CFLAGS@ @LIBSTRING_UTIL_CFLAGS@
 libinterface_sercos_protocol_la_LDFLAGS  = -Wall -release $(PACKAGE_VERSION)
 
 VPATH = $(srcdir):$(top_srcdir)/share/ln/message_definitions
 
 LN_MESSAGES = robotkernel/sercos_protocol/read_id \
-			  robotkernel/sercos_protocol/write_id \
-			  robotkernel/sercos_protocol/set_command
+              robotkernel/sercos_protocol/write_id \
+              robotkernel/sercos_protocol/set_command
 
 ln_messages.h: Makefile $(LN_MESSAGES)
 	@echo creating ln_messages.h
@@ -23,4 +23,4 @@ ln_messages.h: Makefile $(LN_MESSAGES)
 install-exec-hook:
 	mkdir -p $(prefix)/share
 	-cp -rf $(srcdir)/share/* $(prefix)/share/
-	
+

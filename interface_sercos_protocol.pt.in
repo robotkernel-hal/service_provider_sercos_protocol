@@ -1,9 +1,9 @@
 PTVERSION           = 2
 NAME                = @PACKAGE@
-VERSION             = @PACKAGE_VERSION@
+VERSION             = @VERSION@
 DESCRIPTION         = robotkernel @PACKAGE@
 DOCUMENTATION       = https://rmintra01.robotic.dlr.de/wiki/Robotkernel/interface_sercos_protocol
-MAINTAINER          = Robert Burger <robert.burger@dlr.de>
+MAINTAINER          = @MAINTAINER@
 ARCHS               = @ARCHS@
 SUPPORTED_LANGUAGES = C
 C_INCLUDE_PATHS     = ${PKGROOT}/include/
@@ -14,5 +14,5 @@ C_LIBS              =
 build/${ARCH}/install/lib => lib/${ARCH}
 doc/ => doc/
 share/ => share/
-*.h => include/@PACKAGE@/
+src/main/cpp/*.h => include/@PACKAGE@/
 
