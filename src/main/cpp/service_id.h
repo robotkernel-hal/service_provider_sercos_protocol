@@ -31,6 +31,7 @@
 #include "robotkernel/module.h"
 #include "module_intf.h"
 #include <list>
+#include <math.h>
 
 namespace interface_sercos_protocol {
 

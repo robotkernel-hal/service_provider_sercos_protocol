@@ -52,192 +52,219 @@ using namespace interface_sercos_protocol;
 sercos_protocol::sercos_protocol(const YAML::Node& node) 
     : interface_base("sercos_protocol", node) {
     kernel& k = *kernel::get_instance();
-    if (!k.clnt)
-        throw str_exception("[interface_sercos_protocol|%s] no ln_connection!\n", 
-                mod_name.c_str());
     
     stringstream base;
-    base << k.clnt->name << "." << mod_name << "." << dev_name << ".";
+    base << mod_name << "." << dev_name << ".sercos_protocol.";
 
-    register_read_id(k.clnt, base.str() + "sercos_protocol.read_id");
-    register_write_id(k.clnt, base.str() + "sercos_protocol.write_id");
-    register_set_command(k.clnt, base.str() + "sercos_protocol.set_command");
+    k.add_service(mod_name, base.str() + "read_id", 
+            service_definition_read_id,
+            boost::bind(&sercos_protocol::service_read_id, this, _1));
+    k.add_service(mod_name, base.str() + "write_id", 
+            service_definition_write_id,
+            boost::bind(&sercos_protocol::service_write_id, this, _1));
+    k.add_service(mod_name, base.str() + "set_command", 
+            service_definition_set_command,
+            boost::bind(&sercos_protocol::service_set_command, this, _1));
 }
 
-//! service read id callback
-int sercos_protocol::on_read_id(ln::service_request& req, 
-        ln_service_robotkernel_sercos_protocol_read_id& svc) {
-    
-    if (service_ids.find(svc.req.idn) == service_ids.end()) {
-        service_ids[svc.req.idn] = new service_id(mod_name, 
-                slave_id, svc.req.idn, 0);
+//! service callback request read id
+/*!
+ * \param message service message
+ * \return success
+ */
+int sercos_protocol::service_read_id(YAML::Node& message) {
+    uint16_t idn = get_as<uint16_t>(message["request"], "idn");
+    uint8_t elements = get_as<uint8_t>(message["request"], "elements");
+   
+    // default response values 
+    message["response"]["state"]         = 0;
+    message["response"]["structure"]     = 0;
+    message["response"]["name"]          = "";
+    message["response"]["unit"]          = "";
+    message["response"]["attr"]          = 0;
+    message["response"]["min_value"]     = "";
+    message["response"]["max_value"]     = "";
+    message["response"]["value"]         = "";
+    message["response"]["error_message"] = "";
+
+    if (service_ids.find(idn) == service_ids.end()) {
+        service_ids[idn] = new service_id(mod_name, 
+                slave_id, idn, 0);
     }
 
-    service_id& id = *service_ids[svc.req.idn];
-    id.update_elements(svc.req.elements);
+    service_id& id = *service_ids[idn];
+    id.update_elements(elements);
 
     if (id.status != "") {
         // error occured
-        svc.resp.error_message = strdup(id.status.c_str());
-        svc.resp.error_message_len = strlen(svc.resp.error_message);
-        req.respond();
-        free(svc.resp.error_message);
+        message["response"]["error_message"] = id.status;
         return 0;
     }
     
     // get id name 
-    if (svc.req.elements & SSE_NAME) {
-        svc.resp.name = &id.data.name[4];
-        svc.resp.name_len = strnlen(svc.resp.name, 
-                ((uint16_t *)id.data.name)[0]);
-    }
+    if (elements & SSE_NAME)
+        message["response"]["name"] = 
+            string(&id.data.name[4], ((uint16_t *)id.data.name)[0]);
     
     // read structure
-    if (svc.req.elements & SSE_STRC)
-        svc.resp.structure = id.data.structure;
+    if (elements & SSE_STRC)
+        message["response"]["structure"] = id.data.structure;
     
     // read unit
-    if (svc.req.elements & SSE_UNIT) {
+    if (elements & SSE_UNIT) {
         uint16_t len = ((uint16_t *)id.data.unit)[0];
 
-        if (len == 0) {
-            svc.resp.unit = NULL;
-            svc.resp.unit_len = 0;
-        } else if (len <= 12) {
-            svc.resp.unit = &id.data.unit[4];
-            svc.resp.unit_len = len;
-        }
+        if ((len != 0) && (len <= 12)) 
+            message["response"]["unit"] = 
+                string(&id.data.unit[4], len);
     }
         
     // get idn attribute
-    if (svc.req.elements & SSE_ATTR)
-        svc.resp.attr = *(uint32_t *)&id.data.attr;
+    if (elements & SSE_ATTR)
+        message["response"]["attr"] = *(uint32_t *)&id.data.attr;
 
-    if (svc.req.elements & SSE_MINVAL) {
+    if (elements & SSE_MINVAL) {
         if (id.data.attr.datatype == SSA_DATATYPE_CHARSET)
-            svc.resp.min_value = strdup("N/A");
-        else {
-            string tmp = id.min_val_to_string();
-            svc.resp.min_value = strdup(tmp.c_str());
-        }
-        svc.resp.min_value_len = strlen(svc.resp.min_value);
+            message["response"]["min_value"] = string("N/A");
+        else
+            message["response"]["min_value"] = id.min_val_to_string();
     }
     
-    if (svc.req.elements & SSE_MAXVAL) {
+    if (elements & SSE_MAXVAL) {
         if (id.data.attr.datatype == SSA_DATATYPE_CHARSET)
-            svc.resp.max_value = strdup("N/A");
-        else {
-            string tmp = id.max_val_to_string();
-            svc.resp.max_value = strdup(tmp.c_str());
-        }
-        svc.resp.max_value_len = strlen(svc.resp.max_value);
+            message["response"]["max_value"] = string("N/A");
+        else
+            message["response"]["max_value"] = id.max_val_to_string();
     }
 
-    if (svc.req.elements & SSE_DATA) {
-        string tmp = id.val_to_string();
-        svc.resp.value = strdup(tmp.c_str());
-        svc.resp.value_len = strlen(svc.resp.value);
-    }
-
-    req.respond();
-
-    if (svc.resp.value)
-        free(svc.resp.value);
-    if (svc.resp.min_value)
-        free(svc.resp.min_value);
-    if (svc.resp.max_value)
-        free(svc.resp.max_value);
+    if (elements & SSE_DATA)
+        message["response"]["value"] = id.val_to_string();
 
     return 0;
 }
 
-//! service write id callback
-int sercos_protocol::on_write_id(ln::service_request& req, 
-        ln_service_robotkernel_sercos_protocol_write_id& svc) {
-    string value(svc.req.value, svc.req.value_len);
+const std::string sercos_protocol::service_definition_read_id =
+    "request:\n"
+    "   uint16_t: idn\n"
+    "   uint8_t: elements\n"
+    "response:\n"
+    "   int32_t: state\n"
+    "   uint16_t: structure\n"
+    "   string: name\n"
+    "   string: unit\n"
+    "   uint32_t: attr\n"
+    "   string: min_value\n"
+    "   string: max_value\n"
+    "   string: value\n"
+    "   string: error_message\n";
+
+//! service callback request write id
+/*!
+ * \param message service message
+ * \return success
+ */
+int sercos_protocol::service_write_id(YAML::Node& message) {
+    uint16_t idn = get_as<uint16_t>(message["request"], "idn");
+    uint8_t elements = get_as<uint8_t>(message["request"], "elements");
     
-    if (service_ids.find(svc.req.idn) == service_ids.end()) {
-        service_ids[svc.req.idn] = new service_id(mod_name, 
-                slave_id, svc.req.idn, 0);
+    if (service_ids.find(idn) == service_ids.end()) {
+        service_ids[idn] = new service_id(mod_name, 
+                slave_id, idn, 0);
     }
 
-    service_id& id = *service_ids[svc.req.idn];
+    service_id& id = *service_ids[idn];
     id.update_elements(SSE_ATTR);
 
-    if (svc.req.elements & SSE_NAME) {
-//        svc.resp.name = &id.data.name[4];
-//        svc.resp.name_len = ((uint16_t *)id.data.name)[0];
+    if (elements & SSE_NAME) {
+        // TODO
+        // string name = get_as<string>(message["request"], "name");
+        // id.string_to_data(name.c_str(), &id.data.name, 
+        //         &id.data.name_len);
     }
     
     // read structure
-    if (svc.req.elements & SSE_STRC)
-        id.data.structure = svc.req.structure;
+    if (elements & SSE_STRC)
+        id.data.structure = get_as<uint16_t>(message["request"], "structure");
     
     // read unit
-    if (svc.req.elements & SSE_UNIT) {
-//        uint16_t len = ((uint16_t *)id.data.unit)[0];
-//
-//        if (len <= 12) {
-//            svc.resp.unit = &id.data.unit[4];
-//            svc.resp.unit_len = len;
-//        }
+    if (elements & SSE_UNIT) {
+        // TODO
+        // string unit = get_as<string>(message["request"], "unit");
+        // id.string_to_data(unit.c_str(), &id.data.unit, 
+        //         &id.data.unit_len);
     }
         
     // get idn attribute
-    if (svc.req.elements & SSE_ATTR)
-        id.data.attr = *(sercos_service_attribute *)&svc.req.attr;
+    if (elements & SSE_ATTR) {
+        uint32_t attr = get_as<uint32_t>(message["response"], "attr");
+        id.data.attr = *(sercos_service_attribute *)&attr;
+    }
 
-    if (svc.req.elements & SSE_MINVAL) {
-        string min_val(svc.req.min_value, svc.req.min_value_len);
+    if (elements & SSE_MINVAL) {
+        string min_val = get_as<string>(message["request"], "min_value");
         id.string_to_min_val(min_val.c_str());
     }
     
-    if (svc.req.elements & SSE_MAXVAL) {
-        string max_val(svc.req.max_value, svc.req.max_value_len);
+    if (elements & SSE_MAXVAL) {
+        string max_val = get_as<string>(message["request"], "max_value");
         id.string_to_max_val(max_val.c_str());
     }
 
-    if (svc.req.elements & SSE_DATA) {
-        string val(svc.req.value, svc.req.value_len);
-        id.string_to_val(val.c_str());
+    if (elements & SSE_DATA) {
+        string value = get_as<string>(message["request"], "value");
+        id.string_to_val(value.c_str());
     }
 
-    id.write_elements(svc.req.elements);
+    id.write_elements(elements);
 
-    if (id.status != "") {
+    if (id.status != "")
         // error occured
-        svc.resp.error_message = strdup(id.status.c_str());
-        svc.resp.error_message_len = strlen(svc.resp.error_message);
-    }
-
-    req.respond();
-
-    if (svc.resp.error_message)
-        free(svc.resp.error_message);
+        message["response"]["error_message"] = id.status;
 
     return 0;
 }
 
-//! service set command callback
-int sercos_protocol::on_set_command(ln::service_request& req, 
-        ln_service_robotkernel_sercos_protocol_set_command& svc) {
-    sercos_set_command_t cmd = { slave_id, svc.req.cmd };
+const std::string sercos_protocol::service_definition_write_id =
+    "request:\n"
+    "   uint16_t: idn\n"
+    "   uint8_t: elements\n"
+    "   int32_t: state\n"
+    "   uint16_t: structure\n"
+    "   string: name\n"
+    "   string: unit\n"
+    "   uint32_t: attr\n"
+    "   string: min_value\n"
+    "   string: max_value\n"
+    "   string: value\n"
+    "response:\n"
+    "   string: error_message\n";
+
+//! service callback request set command
+/*!
+ * \param message service message
+ * \return success
+ */
+int sercos_protocol::service_set_command(YAML::Node& message) {
+    sercos_set_command_t cmd = { slave_id, 
+        get_as<int32_t>(message["request"], "cmd") };
+
+    // default response values 
+    message["response"]["error_message"] = "";
 
     // execute procedure command    
-    int ret = kernel::request_cb(mod_name.c_str(), 
-            MOD_REQUEST_SERCOS_SET_COMMAND, (void *)&cmd);
-
-    if (ret != 0) {
+    if (kernel::request_cb(mod_name.c_str(), 
+                MOD_REQUEST_SERCOS_SET_COMMAND, (void *)&cmd) != 0) {
         // error occured
-        svc.resp.error_message = strdup("executing procedure command failed");
-        svc.resp.error_message_len = strlen(svc.resp.error_message);
+        message["response"]["error_message"] = 
+            "executing procedure command failed";
     }
-
-    req.respond();
-    
-    if (svc.resp.error_message)
-        free(svc.resp.error_message);
 
     return 0;
 }
+
+const std::string sercos_protocol::service_definition_set_command =
+    "request:\n"
+    "   int32_t: cmd\n"
+    "response:\n"
+    "   string: error_message\n";
 

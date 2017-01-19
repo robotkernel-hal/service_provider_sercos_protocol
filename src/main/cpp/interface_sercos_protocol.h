@@ -30,20 +30,9 @@
 #include "service_id.h"
 #include "robotkernel/interface_base.h"
 
-#define LN_UNREGISTER_SERVICE_IN_BASE_DETOR  
-#include "ln_messages.h"
-#undef LN_UNREGISTER_SERVICE_IN_BASE_DETOR
-
-#define INTFNAME "[interface_sercos_protocol] "
-
 namespace interface_sercos_protocol {
     
-class sercos_protocol : 
-    public robotkernel::interface_base, 
-    public ln_service_read_id_base,
-    public ln_service_write_id_base,
-    public ln_service_set_command_base 
-{
+class sercos_protocol : public robotkernel::interface_base {
     typedef std::map<int, service_id *> id_map_t;
     id_map_t service_ids;
 
@@ -54,17 +43,29 @@ class sercos_protocol :
          */
         sercos_protocol(const YAML::Node& node);
 
-        //! service read id callback
-        int on_read_id(ln::service_request& req, 
-                ln_service_robotkernel_sercos_protocol_read_id& svc);
+        //! service callback request read id
+        /*!
+         * \param message service message
+         * \return success
+         */
+        int service_read_id(YAML::Node& message);
+        static const std::string service_definition_read_id;
 
-        //! service write id callback
-        int on_write_id(ln::service_request& req, 
-                ln_service_robotkernel_sercos_protocol_write_id& svc);
+        //! service callback request write id
+        /*!
+         * \param message service message
+         * \return success
+         */
+        int service_write_id(YAML::Node& message);
+        static const std::string service_definition_write_id;
 
-        //! service set command callback
-        int on_set_command(ln::service_request& req, 
-                ln_service_robotkernel_sercos_protocol_set_command& svc);
+        //! service callback request set command
+        /*!
+         * \param message service message
+         * \return success
+         */
+        int service_set_command(YAML::Node& message);
+        static const std::string service_definition_set_command;
 };
 
 } // namespace interface
