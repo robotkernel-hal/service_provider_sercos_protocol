@@ -28,45 +28,85 @@
 #define __INTERFACE_SERCOS_PROTOCOL_H__
 
 #include "service_id.h"
-#include "robotkernel/interface_base.h"
+
+#include "robotkernel/service_provider_base.h"
+#include "robotkernel/service_provider_intf.h"
+#include "robotkernel/service.h"
+#include "robotkernel/kernel.h"
+#include "robotkernel/log_base.h"
 
 namespace interface_sercos_protocol {
-    
-class sercos_protocol : public robotkernel::interface_base {
-    typedef std::map<int, service_id *> id_map_t;
-    id_map_t service_ids;
+	extern const char* sercos_protocol_sp_magic;
 
-    public:
-        //! default construction
-        /*!
-         * \param node configuration node
-         */
-        sercos_protocol(const YAML::Node& node);
+	// forward declaration
+	class sercos_protocol_handler;
 
-        //! service callback request read id
-        /*!
-         * \param message service message
-         * \return success
-         */
-        int service_read_id(YAML::Node& message);
-        static const std::string service_definition_read_id;
+	class sercos_protocol : 
+		public robotkernel::service_provider_base<sercos_protocol_handler> {
+			public:
+				//! default construction
+				/*!
+				 * \param node configuration node
+				 */
+				sercos_protocol()
+					: service_provider_base("sercos_protocol") {};
 
-        //! service callback request write id
-        /*!
-         * \param message service message
-         * \return success
-         */
-        int service_write_id(YAML::Node& message);
-        static const std::string service_definition_write_id;
+				~sercos_protocol() {};
 
-        //! service callback request set command
-        /*!
-         * \param message service message
-         * \return success
-         */
-        int service_set_command(YAML::Node& message);
-        static const std::string service_definition_set_command;
-};
+				//! service provider magic 
+				/*!
+				 * \return return service provider magic string
+				 */
+				const char* get_sp_magic() 
+				{ return sercos_protocol_sp_magic; };
+		};
+
+	class sercos_protocol_handler : public robotkernel::log_base {
+		public:
+			std::string mod_name;	//!< slave owner module
+			std::string dev_name;	//!< service device name
+			int slave_id;			//!< slave identifier
+			
+			typedef std::map<int, service_id *> id_map_t;
+			id_map_t service_ids;
+
+			//! handler construction
+			sercos_protocol_handler(std::string mod_name, std::string dev_name, 
+					int slave_id);
+
+			//! handler destruction
+			~sercos_protocol_handler();
+
+			//! service callback request read id
+			/*!
+		 	 * \param request service request data
+			 * \parma response service response data
+			 * \return success
+			 */
+			int service_read_id(const robotkernel::service_arglist_t& request, 
+					robotkernel::service_arglist_t& response);
+			static const std::string service_definition_read_id;
+
+			//! service callback request write id
+			/*!
+		 	 * \param request service request data
+			 * \parma response service response data
+			 * \return success
+			 */
+			int service_write_id(const robotkernel::service_arglist_t& request, 
+					robotkernel::service_arglist_t& response);
+			static const std::string service_definition_write_id;
+
+			//! service callback request set command
+			/*!
+		 	 * \param request service request data
+			 * \parma response service response data
+			 * \return success
+			 */
+			int service_set_command(const robotkernel::service_arglist_t& request, 
+					robotkernel::service_arglist_t& response);
+			static const std::string service_definition_set_command;
+	};
 
 } // namespace interface
 

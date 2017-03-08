@@ -93,7 +93,7 @@ typedef struct sercos_service_transfer {
 
 //! sercos execute procedure command on drive
 typedef struct sercos_set_command {
-    uint32_t slave_id;                      //! at number
+    int slave_id;                           //! at number
     uint16_t cmd;                           //! procedure command
 } sercos_set_command_t;
 

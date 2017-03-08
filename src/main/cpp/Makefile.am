@@ -5,8 +5,8 @@ BUILT_SOURCES = ln_messages.h
 CLEANFILES = ln_messages.h
 
 libinterface_sercos_protocol_la_SOURCES  = service_id.cpp interface_sercos_protocol.cpp
-libinterface_sercos_protocol_la_CXXFLAGS = -fno-strict-aliasing -Wall -I$(srcdir) -I$(builddir) \
-                                           @ROBOTKERNEL_CFLAGS@ @YAML_CPP_CFLAGS@ @LIBSTRING_UTIL_CFLAGS@
+libinterface_sercos_protocol_la_CXXFLAGS = --std=c++11 -fno-strict-aliasing -Wall -I$(srcdir) -I$(builddir) \
+                                           @ROBOTKERNEL_CFLAGS@ @YAML_CPP_RMC_CFLAGS@ @LIBSTRING_UTIL_CFLAGS@
 libinterface_sercos_protocol_la_LDFLAGS  = -Wall -release $(PACKAGE_VERSION)
 
 VPATH = $(srcdir):$(top_srcdir)/share/ln/message_definitions
