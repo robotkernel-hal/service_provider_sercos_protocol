@@ -1,26 +1,15 @@
-
 libdir = $(prefix)/lib
-lib_LTLIBRARIES = libinterface_sercos_protocol.la
-BUILT_SOURCES = ln_messages.h
-CLEANFILES = ln_messages.h
+lib_LTLIBRARIES = libservice_provider_sercos_protocol.la
 
-libinterface_sercos_protocol_la_SOURCES  = service_id.cpp interface_sercos_protocol.cpp
-libinterface_sercos_protocol_la_CXXFLAGS = --std=c++11 -fno-strict-aliasing -Wall -I$(srcdir) -I$(builddir) \
-                                           @ROBOTKERNEL_CFLAGS@ @YAML_CPP_RMC_CFLAGS@ @LIBSTRING_UTIL_CFLAGS@
-libinterface_sercos_protocol_la_LDFLAGS  = -Wall -release $(PACKAGE_VERSION)
+extraincludedir = $(includedir)/service_provider/sercos_protocol
+extrainclude_HEADERS = include/service_provider/sercos_protocol/base.h
 
-VPATH = $(srcdir):$(top_srcdir)/share/ln/message_definitions
+libservice_provider_sercos_protocol_la_SOURCES  = service_id.cpp provider.cpp
+libservice_provider_sercos_protocol_la_CXXFLAGS = --std=c++11 -fno-strict-aliasing -Wall 		\
+												  -I$(srcdir) -I$(builddir) -I$(srcdir)/include \
+												  @ROBOTKERNEL_CFLAGS@ 							\
+												  @YAML_CPP_RMC_CFLAGS@ 						\
+												  @LIBSTRING_UTIL_CFLAGS@
+libservice_provider_sercos_protocol_la_LDFLAGS  = -Wall -release $(PACKAGE_VERSION)
 
-LN_MESSAGES = robotkernel/sercos_protocol/read_id \
-              robotkernel/sercos_protocol/write_id \
-              robotkernel/sercos_protocol/set_command
-
-ln_messages.h: Makefile $(LN_MESSAGES)
-	@echo creating ln_messages.h
-	@LN_GENERATE@ -o $@ $(LN_MESSAGES)
-	touch $@
-
-install-exec-hook:
-	mkdir -p $(prefix)/share
-	-cp -rf $(srcdir)/share/* $(prefix)/share/
 
