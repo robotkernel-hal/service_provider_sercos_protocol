@@ -42,7 +42,7 @@ namespace service_provider {
         // forward declaration
         class handler;
 
-        class provider : public robotkernel::service_provider_base<handler> {
+        class provider : public robotkernel::service_provider_base<handler, base> {
             public:
                 //! default construction
                 /*!
