@@ -125,6 +125,8 @@ namespace service_provider {
                         const sercos_service_elements_t& elements, service_data_t& data) = 0;
         };
 
+        inline base::~base() { }
+
     }; // namespace sercos_protocol
 
 }; // namespace service_provider
