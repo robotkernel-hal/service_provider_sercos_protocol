@@ -48,8 +48,8 @@ using namespace string_util;
 #endif
 
 //! handler construction
-sercos_protocol::handler::handler(const robotkernel::sp_service_requester_t& req) 
-    : log_base("sercos_protocol", req->owner + "." + req->service_prefix + ".sercos_protocol") {
+sercos_protocol::handler::handler(const robotkernel::sp_service_collector_device_t& req) 
+    : log_base("sercos_protocol", req->owner + "." + req->device_name + ".sercos_protocol") {
     robotkernel::kernel& k = *robotkernel::kernel::get_instance();
 
     _instance = std::dynamic_pointer_cast<service_provider::sercos_protocol::base>(req);
@@ -57,7 +57,7 @@ sercos_protocol::handler::handler(const robotkernel::sp_service_requester_t& req
         throw str_exception("wrong base class");
 
     std::stringstream base;
-    base << _instance->owner << "." << _instance->service_prefix << ".sercos_protocol.";
+    base << _instance->owner << "." << _instance->device_name << ".sercos_protocol.";
 
     k.add_service(_instance->owner, base.str() + "read_id", 
             service_definition_read_id,
@@ -72,7 +72,7 @@ sercos_protocol::handler::~handler() {
     kernel& k = *kernel::get_instance();
 
     stringstream base;
-    base << _instance->owner << "." << _instance->service_prefix << ".sercos_protocol.";
+    base << _instance->owner << "." << _instance->device_name << ".sercos_protocol.";
     k.remove_service(base.str() + "read_id");
     k.remove_service(base.str() + "write_id");
 };

@@ -27,7 +27,7 @@
 
 #include <list>
 
-#include "robotkernel/service_requester_base.h"
+#include "robotkernel/service_collector_device.h"
 
 namespace service_provider {
 
@@ -97,11 +97,11 @@ namespace service_provider {
             std::vector<uint16_t> value;
         } service_data_t;
 
-        class base : public robotkernel::service_requester_base {
+        class base : public robotkernel::service_collector_device {
             public:
                 //! construction
                 base(std::string owner, std::string service_prefix)
-                : robotkernel::service_requester_base(owner, service_prefix) {};
+                : robotkernel::service_collector_device(owner, service_prefix) {};
 
                 //! destruction
                 virtual ~base() = 0;
