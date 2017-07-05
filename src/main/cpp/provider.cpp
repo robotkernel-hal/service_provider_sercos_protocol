@@ -56,13 +56,10 @@ sercos_protocol::handler::handler(const robotkernel::sp_service_interface_t& req
     if (!_instance)
         throw str_exception("wrong base class");
 
-    std::stringstream base;
-    base << _instance->device_name << ".sercos_protocol.";
-
-    k.add_service(_instance->owner, base.str() + "read_id", 
+    k.add_service(_instance->owner, _instance->device_name + ".read_id", 
             service_definition_read_id,
             std::bind(&sercos_protocol::handler::service_read_id, this, _1, _2));
-    k.add_service(_instance->owner, base.str() + "write_id", 
+    k.add_service(_instance->owner, _instance->device_name + ".write_id", 
             service_definition_write_id,
             std::bind(&sercos_protocol::handler::service_write_id, this, _1, _2));
 }
@@ -70,11 +67,8 @@ sercos_protocol::handler::handler(const robotkernel::sp_service_interface_t& req
 //! handler destruction
 sercos_protocol::handler::~handler() {
     kernel& k = *kernel::get_instance();
-
-    stringstream base;
-    base << _instance->device_name << ".sercos_protocol.";
-    k.remove_service(_instance->owner, base.str() + "read_id");
-    k.remove_service(_instance->owner, base.str() + "write_id");
+    k.remove_service(_instance->owner, _instance->device_name + ".read_id");
+    k.remove_service(_instance->owner, _instance->device_name + ".write_id");
 };
 
 //! service callback request read id
