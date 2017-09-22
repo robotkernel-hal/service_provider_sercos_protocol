@@ -1,7 +1,0 @@
-service
-
-request
-int32_t     cmd
-
-response
-char*       error_message
