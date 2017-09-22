@@ -1,0 +1,18 @@
+requires_version 0.2.43
+# this include file can be customized with the following defines:
+#   service_provider_sercos_protocol_base
+#     (optional) path to service_provider_sercos_protocol base directory
+#     e.g. /volume/software/robotkernel/packages/service_provider_sercos_protocol/5.0.0
+#     defaults to rmpm structure
+#   service_provider_sercos_protocol_library_path
+#     (optional) add custom search paths
+
+defines
+service_provider_sercos_protocol_base:          %(dirname %(dirname %(CURDIR)))
+service_provider_sercos_protocol_libdir:        %(subst "${exec_prefix}/", "", "@libdir@")
+service_provider_sercos_protocol_type:          %(ifexists "%(service_provider_sercos_protocol_base)/%(service_provider_sercos_protocol_libdir)/libservice_provider_sercos_protocol.so", "local_install", "rmpm_release")
+service_provider_sercos_protocol_library_path:  %(ifeq "%(service_provider_sercos_protocol_type)", "local_install", "%(service_provider_sercos_protocol_base)/%(service_provider_sercos_protocol_libdir)", "%(service_provider_sercos_protocol_base)/lib/$(ARCH)")
+
+ifndef rk_library_path: rk_library_path: ""
+rk_library_path: %(rk_library_path):%(service_provider_sercos_protocol_library_path)
+
