@@ -139,17 +139,17 @@ int sercos_protocol::handler::service_read_id(const robotkernel::service_arglist
 
 const std::string sercos_protocol::handler::service_definition_read_id =
 "request:\n"
-"   uint16_t: idn\n"
-"   uint8_t: elements\n"
+"- uint16_t: idn\n"
+"- uint8_t: elements\n"
 "response:\n"
-"   uint16_t: structure\n"
-"   string: name\n"
-"   string: unit\n"
-"   uint32_t: attr\n"
-"   string: min_value\n"
-"   string: max_value\n"
-"   string: value\n"
-"   string: error_message\n";
+"- uint16_t: structure\n"
+"- string: name\n"
+"- string: unit\n"
+"- uint32_t: attr\n"
+"- string: min_value\n"
+"- string: max_value\n"
+"- string: value\n"
+"- string: error_message\n";
 
 //! service callback request write id
 /*!
@@ -224,15 +224,15 @@ int sercos_protocol::handler::service_write_id(const robotkernel::service_arglis
 
 const std::string sercos_protocol::handler::service_definition_write_id =
 "request:\n"
-"   uint16_t: idn\n"
-"   uint8_t: elements\n"
-"   uint16_t: structure\n"
-"   string: name\n"
-"   string: unit\n"
-"   uint32_t: attr\n"
-"   string: min_value\n"
-"   string: max_value\n"
-"   string: value\n"
+"- uint16_t: idn\n"
+"- uint8_t: elements\n"
+"- uint16_t: structure\n"
+"- string: name\n"
+"- string: unit\n"
+"- uint32_t: attr\n"
+"- string: min_value\n"
+"- string: max_value\n"
+"- string: value\n"
 "response:\n"
-"   string: error_message\n";
+"- string: error_message\n";
 
