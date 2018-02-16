@@ -36,56 +36,68 @@
 #include "robotkernel/log_base.h"
 
 namespace service_provider {
+#ifdef EMACS
+}
+#endif
 
-    namespace sercos_protocol {
+namespace sercos_protocol {
+#ifdef EMACS
+}
+#endif
 
-        // forward declaration
-        class handler;
+// forward declaration
+class handler;
 
-        class provider : public robotkernel::service_provider_base<handler, base> {
-            public:
-                //! default construction
-                /*!
-                 * \param node configuration node
-                 */
-                provider()
-                    : service_provider_base("sercos_protocol") {};
-        };
+class provider : public robotkernel::service_provider_base<handler, base> {
+    public:
+        //! default construction
+        /*!
+         * \param node configuration node
+         */
+        provider(const std::string& name)
+            : service_provider_base(name, "sercos_protocol") {};
+};
 
-        class handler : public robotkernel::log_base {
-            public:
-                typedef std::shared_ptr<service_provider::sercos_protocol::base> sp_sp_base_t;
-                sp_sp_base_t _instance;
+class handler : public robotkernel::log_base {
+    public:
+        typedef std::shared_ptr<service_provider::sercos_protocol::base> sp_sp_base_t;
+        sp_sp_base_t _instance;
 
-                //! handler construction
-                handler(const robotkernel::sp_service_interface_t& req);
+        //! handler construction
+        handler(const robotkernel::sp_service_interface_t& req);
 
-                //! handler destruction
-                ~handler();
+        //! handler destruction
+        ~handler();
 
-                //! service callback request read id
-                /*!
-                 * \param request service request data
-                 * \parma response service response data
-                 * \return success
-                 */
-                int service_read_id(const robotkernel::service_arglist_t& request, 
-                        robotkernel::service_arglist_t& response);
-                static const std::string service_definition_read_id;
+        //! service callback request read id
+        /*!
+         * \param request service request data
+         * \parma response service response data
+         * \return success
+         */
+        int service_read_id(const robotkernel::service_arglist_t& request, 
+                robotkernel::service_arglist_t& response);
+        static const std::string service_definition_read_id;
 
-                //! service callback request write id
-                /*!
-                 * \param request service request data
-                 * \parma response service response data
-                 * \return success
-                 */
-                int service_write_id(const robotkernel::service_arglist_t& request, 
-                        robotkernel::service_arglist_t& response);
-                static const std::string service_definition_write_id;
-        };
+        //! service callback request write id
+        /*!
+         * \param request service request data
+         * \parma response service response data
+         * \return success
+         */
+        int service_write_id(const robotkernel::service_arglist_t& request, 
+                robotkernel::service_arglist_t& response);
+        static const std::string service_definition_write_id;
+};
 
-    }; // sercos protocol
+#ifdef EMACS
+{
+#endif
+}; // sercos protocol
 
+#ifdef EMACS
+{
+#endif
 }; // service provider
 
 #endif // __SERVICE_PROVIDER__SERCOS_PROTOCOL__PROVIDER_H__
