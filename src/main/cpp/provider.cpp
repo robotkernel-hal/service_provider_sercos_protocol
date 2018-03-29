@@ -49,7 +49,7 @@ using namespace string_util;
 
 //! handler construction
 sercos_protocol::handler::handler(const robotkernel::sp_service_interface_t& req) 
-    : log_base(req->owner, "sercos_protocol", req->device_name + ".sercos_protocol") {
+    : log_base(req->owner, "sercos_protocol", req->device_name) {
     robotkernel::kernel& k = *robotkernel::kernel::get_instance();
 
     _instance = std::dynamic_pointer_cast<service_provider::sercos_protocol::base>(req);
