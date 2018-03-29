@@ -10,9 +10,9 @@ requires_version 0.2.43
 defines
 service_provider_sercos_protocol_base:          %(dirname %(dirname %(CURDIR)))
 service_provider_sercos_protocol_libdir:        %(subst "${exec_prefix}/", "", "@libdir@")
-service_provider_sercos_protocol_type:          %(ifexists "%(service_provider_sercos_protocol_base)/%(service_provider_sercos_protocol_libdir)/libservice_provider_sercos_protocol.so", "local_install", "rmpm_release")
-service_provider_sercos_protocol_library_path:  %(ifeq "%(service_provider_sercos_protocol_type)", "local_install", "%(service_provider_sercos_protocol_base)/%(service_provider_sercos_protocol_libdir)", "%(service_provider_sercos_protocol_base)/lib/$(ARCH)")
+service_provider_sercos_protocol_type:          %(ifexists "%(service_provider_sercos_protocol_base)/../$(ARCH)", "rmpm_release", "local_install")
+service_provider_sercos_protocol_library_path:  %(ifeq "%(service_provider_sercos_protocol_type)", "local_install", "%(service_provider_sercos_protocol_base)", "%(dirname %(service_provider_sercos_protocol_base))/$(ARCH)")
 
 ifndef rk_library_path: rk_library_path: ""
-rk_library_path: %(rk_library_path):%(service_provider_sercos_protocol_library_path)
+rk_library_path: %(rk_library_path):%(service_provider_sercos_protocol_library_path)/%(service_provider_sercos_protocol_libdir)
 
