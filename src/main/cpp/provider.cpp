@@ -199,6 +199,14 @@ int sercos_protocol::handler::service_write_id(const robotkernel::service_arglis
     // get idn attribute
     if (elements & SSE_ATTR)
         id.data.attr = *(sercos_service_attribute *)&attr;
+    else {
+        try {
+            _instance->sercos_read_idn(idn, SSE_ATTR, id.data);
+        } catch (std::exception& e) {
+            error_message = e.what();
+            goto func_exit;
+        }
+    }
 
     if (elements & SSE_MINVAL)
         id.string_to_min_val(min_value.c_str());
@@ -214,6 +222,8 @@ int sercos_protocol::handler::service_write_id(const robotkernel::service_arglis
     } catch (std::exception& e) {
         error_message = e.what();
     }
+
+func_exit:
 
 #define WRITE_ID_RESP_ERROR_MESSAGE  0
     response.resize(1);
