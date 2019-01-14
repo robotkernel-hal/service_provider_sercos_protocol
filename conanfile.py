@@ -5,10 +5,10 @@ from conans import ConanFile, AutoToolsBuildEnvironment
 import re
 
 class MainProject(ConanFile):
-    name = "service_provider_process_data_inspection"
+    name = "service_provider_sercos_protocol"
     license = "GPLv3"
     url = f"https://rmc-github.robotic.dlr.de/robotkernel/{name}"
-    description = "robotkernel-5 service provider for process data inspeciton."
+    description = "robotkernel-5 service provider for sercos protocol devices."
     settings = "os", "compiler", "build_type", "arch"
     scm = {
         "type": "git",
