@@ -10,7 +10,3 @@ libservice_provider_sercos_protocol_la_CXXFLAGS = --std=c++11 -fno-strict-aliasi
 												  @ROBOTKERNEL_CFLAGS@ 	
 libservice_provider_sercos_protocol_la_LDFLAGS  = -Wall -release $(PACKAGE_VERSION)
 
-install-exec-hook:
-	mkdir -p $(prefix)/share/ln
-	cp -rf $(top_builddir)/share/ln/service_provider_sercos_protocol.inc.lnc $(prefix)/share/ln/
-	find $(DESTDIR)$(libdir) -type f -name \*.la -delete
