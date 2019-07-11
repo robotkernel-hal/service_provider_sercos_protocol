@@ -138,6 +138,7 @@ int sercos_protocol::handler::service_read_id(const robotkernel::service_arglist
 }
 
 const std::string sercos_protocol::handler::service_definition_read_id =
+"name: service_provider/sercos_protocol/read_id\n"
 "request:\n"
 "- uint16_t: idn\n"
 "- uint8_t: elements\n"
@@ -233,6 +234,7 @@ func_exit:
 }
 
 const std::string sercos_protocol::handler::service_definition_write_id =
+"name: service_provider/sercos_protocol/write_id\n"
 "request:\n"
 "- uint16_t: idn\n"
 "- uint8_t: elements\n"
