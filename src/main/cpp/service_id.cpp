@@ -36,6 +36,9 @@ using namespace service_provider::sercos_protocol;
 using namespace string_util;
 
 string service_id::data_to_string(const std::vector<uint16_t>& val) {
+    if (val.size() == 0)
+        return string("");
+
     switch (data.attr.datalength) {
         case SSA_DATALENGTH_2BYTEFIX:
             return _data_fix_to_string<int16_t, uint16_t, uint16_t>(
