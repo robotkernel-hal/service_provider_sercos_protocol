@@ -6,5 +6,5 @@ class MainProject(base.RobotkernelConanFile):
     name = "service_provider_sercos_protocol"
     description = "robotkernel-5 service provider for sercos protocol devices."
     exports_sources = ["*", "!.gitignore"] + ["!%s" % x for x in tools.Git().excluded_files()]
-    requires = "robotkernel/[~=5.0]@robotkernel/stable"
+    requires = "robotkernel/[~=5]@robotkernel/stable"
 
