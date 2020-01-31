@@ -1,0 +1,62 @@
+'''
+(C) Robert Burger <robert.burger@dlr.de>
+
+This file is part of Robotkernel-GUI.
+
+Robotkernel-GUI is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Robotkernel-GUI is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Robotkernel-GUI.  If not, see <http://www.gnu.org/licenses/>.
+'''
+
+import gtk
+import gobject
+import time
+import traceback
+
+class sercos_object(object):
+    def __init__(self, device, idn):
+        self.sercos_device = device
+        self.idn = idn
+        self.name = 'N/A'
+        self.value = None
+        self.objcode = 0
+        self.data_type = 0
+        self.fd_get_data = None
+        self.valid = False
+
+    def yaml(self):
+        return dict(idn=self.idn, name=self.name.encode("utf-8"), value=self.value)
+
+    def read(self):
+        data = self.sercos_device.read_idn(self.idn)
+        self.set_data(data)
+        self.sercos_device.parent.update()
+
+    def read_async(self):
+        def cb_read(data):
+            self.set_data(data)
+            self.sercos_device.parent.update()
+            return False
+
+        self.sercos_device.read_idn_async(self.idn, cb_read)
+
+    def write(self, value):
+        self.sercos_device.write_idn(self.idn, value)
+        self.valid = False
+        self.read()
+
+    def set_data(self, data):
+        map(lambda x: setattr(self, x, getattr(data, x)), data.__dict__)
+        self.name = data.name.decode('cp437', 'ignore')
+        self.value = data.value
+        self.valid = True
+
