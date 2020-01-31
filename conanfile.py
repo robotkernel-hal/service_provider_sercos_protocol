@@ -1,4 +1,5 @@
 from conans import tools, python_requires
+import os
 
 base = python_requires("conan_template/[~=5]@robotkernel/stable")
 
