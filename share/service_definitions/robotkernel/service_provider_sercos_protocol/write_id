@@ -1,0 +1,14 @@
+name: service_provider_sercos_protocol/write_id
+request:
+- uint16_t: idn
+- uint8_t: elements
+- uint16_t: structure
+- string: name
+- string: unit
+- uint32_t: attr
+- string: min_value
+- string: max_value
+- string: value
+response:
+- string: error_message
+
