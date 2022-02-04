@@ -26,6 +26,7 @@
 
 #include "provider.h"
 #include "service_id.h"
+#include "service_definitions.h"
 
 #include "robotkernel/exceptions.h"
 #include "robotkernel/kernel.h"
@@ -37,6 +38,10 @@ using namespace std::placeholders;
 using namespace robotkernel;
 using namespace service_provider;
 using namespace string_util;
+
+const std::string service_provider::sercos_protocol::handler::service_definition_read_id = robotkernel_service_provider_sercos_protocol_read_id_service_definition;
+const std::string service_provider::sercos_protocol::handler::service_definition_write_id = robotkernel_service_provider_sercos_protocol_write_id_service_definition;
+
 
 #if defined __VXWORKS__ || defined __QNX__
 #ifndef min
@@ -137,21 +142,6 @@ int sercos_protocol::handler::service_read_id(const robotkernel::service_arglist
     return 0;
 }
 
-const std::string sercos_protocol::handler::service_definition_read_id =
-"name: service_provider/sercos_protocol/read_id\n"
-"request:\n"
-"- uint16_t: idn\n"
-"- uint8_t: elements\n"
-"response:\n"
-"- uint16_t: structure\n"
-"- string: name\n"
-"- string: unit\n"
-"- uint32_t: attr\n"
-"- string: min_value\n"
-"- string: max_value\n"
-"- string: value\n"
-"- string: error_message\n";
-
 //! service callback request write id
 /*!
  * \param request service request data
@@ -232,19 +222,4 @@ func_exit:
 
     return 0;
 }
-
-const std::string sercos_protocol::handler::service_definition_write_id =
-"name: service_provider/sercos_protocol/write_id\n"
-"request:\n"
-"- uint16_t: idn\n"
-"- uint8_t: elements\n"
-"- uint16_t: structure\n"
-"- string: name\n"
-"- string: unit\n"
-"- uint32_t: attr\n"
-"- string: min_value\n"
-"- string: max_value\n"
-"- string: value\n"
-"response:\n"
-"- string: error_message\n";
 

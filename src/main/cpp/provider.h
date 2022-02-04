@@ -63,6 +63,9 @@ class handler : public robotkernel::log_base {
         typedef std::shared_ptr<service_provider::sercos_protocol::base> sp_sp_base_t;
         sp_sp_base_t _instance;
 
+        static const std::string service_definition_read_id;
+        static const std::string service_definition_write_id;
+
         //! handler construction
         handler(const robotkernel::sp_service_interface_t& req);
 
@@ -77,7 +80,6 @@ class handler : public robotkernel::log_base {
          */
         int service_read_id(const robotkernel::service_arglist_t& request, 
                 robotkernel::service_arglist_t& response);
-        static const std::string service_definition_read_id;
 
         //! service callback request write id
         /*!
@@ -87,7 +89,6 @@ class handler : public robotkernel::log_base {
          */
         int service_write_id(const robotkernel::service_arglist_t& request, 
                 robotkernel::service_arglist_t& response);
-        static const std::string service_definition_write_id;
 };
 
 #ifdef EMACS
