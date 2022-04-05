@@ -19,4 +19,5 @@ class MainProject(ConanFile):
         base.package_info(self)
 
         self.env_info.PYTHONPATH.append(os.path.join(self.package_folder, "bindings/python"))
+        self.env_info.PYTHONPATH.append(os.path.join(self.package_folder, "bindings/python/rk_gui_plugin"))
 
