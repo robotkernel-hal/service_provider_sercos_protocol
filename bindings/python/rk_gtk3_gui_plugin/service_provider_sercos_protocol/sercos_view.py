@@ -17,7 +17,15 @@ You should have received a copy of the GNU General Public License
 along with Robotkernel-GUI.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import os, gtk, gobject, yaml
+import os, yaml
+
+import gi
+gi.require_version('Gtk', '3.0')
+#gi.require_version('GLib', '2.0')
+from gi.repository import Gtk
+#from gi.repository import GObject
+
+
 import helpers
 
 from sercos_device import sercos_device
@@ -28,12 +36,12 @@ def show_file_dialog(dialog, name=""):
     if len(name):
         dialog.set_current_name(name)
     response = dialog.run()
-    if response != gtk.RESPONSE_OK: #cancel button
+    if response != Gtk.ResponseType.OK: #cancel button
         dialog.hide()
         return None
     fn = dialog.get_filename()
     dialog.hide()
-    gtk.main_iteration_do()
+    Gtk.main_iteration_do()
     return fn
 
 class backup_all_dialog(helpers.builder_base):
@@ -41,7 +49,7 @@ class backup_all_dialog(helpers.builder_base):
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sercos_dialog_backup_all.ui')
         helpers.builder_base.__init__(self, fn, 'dialog_backup_all')
 
-        self.dialog_backup_all.set_position(gtk.WIN_POS_CENTER_ALWAYS)
+        self.dialog_backup_all.set_position(Gtk.WindowPosition.CENTER_ALWAYS)
         self.dialog_backup_all.show_all()
 
 """
@@ -119,7 +127,7 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
         self.create_dictionary_treeview()
 
     def create_dictionary_treeview(self):
-        self.treestore_dictionary = store = gtk.TreeStore(int)
+        self.treestore_dictionary = store = Gtk.TreeStore(int)
         view = self.treeview_dictionary
         view.set_model(store)
         view.set_border_width(4)
@@ -137,9 +145,9 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
                 cell.set_property('text', 'P-%04d' % (value-32768))
             return True
 
-        col_cnt = view.insert_column_with_data_func(-1, "IDn" , gtk.CellRendererText(), cb_idn)
+        col_cnt = view.insert_column_with_data_func(-1, "IDn" , Gtk.CellRendererText(), cb_idn)
         column  = view.get_column(col_cnt - 1)
-        column.set_sizing(gtk.TREE_VIEW_COLUMN_GROW_ONLY)
+        column.set_sizing(Gtk.TreeViewColumnSizing.GROW_ONLY)
 
         # ------------------ name column -------------------
         def cb_name(column, cell, store, iter):
@@ -156,9 +164,9 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
             cell.set_property('text', obj.name)
             return True
 
-        col_cnt = view.insert_column_with_data_func(-1, "Name", gtk.CellRendererText(), cb_name)
+        col_cnt = view.insert_column_with_data_func(-1, "Name", Gtk.CellRendererText(), cb_name)
         column  = view.get_column(col_cnt - 1)
-        column.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
+        column.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         column.set_expand(True)
         column.set_resizable(True)
 
@@ -181,9 +189,9 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
                 cell.set_property('text', '--')
             return True
 
-        col_cnt = view.insert_column_with_data_func(-1, "Datatype", gtk.CellRendererText(), cb_datatype)
+        col_cnt = view.insert_column_with_data_func(-1, "Datatype", Gtk.CellRendererText(), cb_datatype)
         column  = view.get_column(col_cnt - 1)
-        column.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
+        column.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         column.set_expand(True)
         column.set_resizable(True)
 
@@ -206,9 +214,9 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
                 cell.set_property('text', '--')
             return True
 
-        col_cnt = view.insert_column_with_data_func(-1, "Datalength", gtk.CellRendererText(), cb_datalength)
+        col_cnt = view.insert_column_with_data_func(-1, "Datalength", Gtk.CellRendererText(), cb_datalength)
         column  = view.get_column(col_cnt - 1)
-        column.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
+        column.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         column.set_expand(True)
         column.set_resizable(True)
 
@@ -227,14 +235,14 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
             cell.set_property("text", obj.value)
             return True
 
-        cell_renderer = gtk.CellRendererText()
+        cell_renderer = Gtk.CellRendererText()
         cell_renderer.set_property("editable", False)
         cell_renderer.connect("edited", self.on_edit_sercos_value)
         self.idvalue_renderer = cell_renderer
 
         col_cnt = view.insert_column_with_data_func(-1, "Value", cell_renderer, cb_data)
         column  = view.get_column(col_cnt - 1)
-        column.set_sizing(gtk.TREE_VIEW_COLUMN_GROW_ONLY)
+        column.set_sizing(Gtk.TreeViewColumnSizing.GROW_ONLY)
         column.set_expand(True)
         column.set_resizable(True)
         store.set_sort_column_id(0, 0)
@@ -327,7 +335,7 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
                         dev.update_idn(idn)
 
                 dlg.progressbar_parametersets.set_fraction(float(cnt)/len(dev.sercos_dictionary))
-                gtk.main_iteration()
+                Gtk.main_iteration()
                 import time
                 time.sleep(0.01)
 
@@ -340,8 +348,8 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
         for dev in devices:
             dev_data[dev.devname] = sorted( map(lambda x: x.yaml(), dev.sercos_dictionary.values()) )
 
-        file_save_dialog = gtk.FileChooserDialog("Select File", None, gtk.FILE_CHOOSER_ACTION_SAVE,
-                (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_OK))
+        file_save_dialog = Gtk.FileChooserDialog("Select File", None, Gtk.FileChooserAction.SAVE,
+                (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
 
         fn = show_file_dialog(file_save_dialog)
         fd = open(fn, "w")
@@ -390,8 +398,8 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
         self.backup_ids(devices)
 
     def on_button_load_clicked(self, btn):
-        file_open_dialog = gtk.FileChooserDialog("Select File", None, gtk.FILE_CHOOSER_ACTION_OPEN,
-                (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+        file_open_dialog = Gtk.FileChooserDialog("Select File", None, Gtk.FileChooserAction.OPEN,
+                (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
 
         fn = show_file_dialog(file_open_dialog)
         data = yaml.load(file(fn))
