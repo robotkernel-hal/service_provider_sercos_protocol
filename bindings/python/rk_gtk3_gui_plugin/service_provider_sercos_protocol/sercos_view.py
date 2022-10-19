@@ -118,12 +118,13 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
         helpers.builder_base.__init__(self, fn, 'sercos_protocol_box')
         helpers.service_provider_view.__init__(self, parent.app, parent, self.sercos_protocol_box, 'read_id')
 
-        container.pack_start(self.sercos_protocol_box, True, True)
+        container.pack_start(self.sercos_protocol_box, True, True, 0)
 
         self.devices = {}
         self.current_device = None
 
-        self.active_color = self.parent.app.window.get_style().text[0].to_string()
+        #self.active_color = self.parent.app.window.get_style().text[0].to_string()
+        self.active_color = "red"
         self.create_dictionary_treeview()
 
     def create_dictionary_treeview(self):

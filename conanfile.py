@@ -19,6 +19,9 @@ class MainProject(ConanFile):
         base = self.python_requires["conan_template"].module.RobotkernelConanFile
         base.package_info(self)
 
+        # FIXME: The lines below also strangely seem to add the old
+        # Gtk2 plugin path, which won't work. Currently it needs to be
+        # stripped out in the robotkernel_gui plugin manager.
         self.env_info.PYTHONPATH.append(os.path.join(self.package_folder, "bindings/python"))
         self.env_info.PYTHONPATH.append(os.path.join(self.package_folder, "bindings/python/rk_gtk3_gui_plugin"))
 
