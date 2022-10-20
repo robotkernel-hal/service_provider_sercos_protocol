@@ -123,8 +123,7 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
         self.devices = {}
         self.current_device = None
 
-        #self.active_color = self.parent.app.window.get_style().text[0].to_string()
-        self.active_color = "red"
+        self.active_color = helpers.gui_utils.get_active_color(self.app.window)
         self.create_dictionary_treeview()
 
     # experimental for debugging
