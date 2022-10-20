@@ -127,6 +127,13 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
         self.active_color = "red"
         self.create_dictionary_treeview()
 
+    # experimental for debugging
+    def on_key_value_tv_button_press_event(self, btn, ev):
+        logger.warning("handler sercos_view.on_key_value_tv_button_press_event() "
+                       "for object 'treeview_dictionary' sercos_view.ui in "
+                       " is not implemented - ignored")
+        return True
+    
     def create_dictionary_treeview(self):
         self.treestore_dictionary = store = Gtk.TreeStore(int)
         view = self.treeview_dictionary
