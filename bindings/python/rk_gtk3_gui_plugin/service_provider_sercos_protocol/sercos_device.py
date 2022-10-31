@@ -16,8 +16,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Robotkernel-GUI.  If not, see <http://www.gnu.org/licenses/>.
 '''
+from __future__ import absolute_import
 
-from sercos_object import sercos_object
+from builtins import map
+from .sercos_object import sercos_object
 import time, helpers, threading, copy
 
 class sercos_dict(dict):
@@ -54,7 +56,7 @@ class sercos_device(helpers.svc_wrapper):
             self.updater_condition.notify()
 
     def set_command(self, command):
-        map(lambda x: self.write_idn(command, x), [1, 3, 0])
+        list(map(lambda x: self.write_idn(command, x), [1, 3, 0]))
 
     def read_idn(self, idn):
         #print 'sercos_device %s : reading idn %d' % (self.devname, idn)
@@ -104,11 +106,11 @@ class sercos_device(helpers.svc_wrapper):
                 return
 
             new_ids = [ x for x in eval(data.value) if x not in self.sercos_dictionary ]
-            map(lambda x: self.sercos_dictionary.update({ x : sercos_object(self, x) }), new_ids)
+            list(map(lambda x: self.sercos_dictionary.update({ x : sercos_object(self, x) }), new_ids))
 
             self.parent.update()
 
-        map(lambda x: self.read_idn_async(x, __cb), [17, 18, 19, 21, 22, 25])
+        list(map(lambda x: self.read_idn_async(x, __cb), [17, 18, 19, 21, 22, 25]))
 
     def update_idn(self, idn, force=False):
         obj = self.sercos_dictionary[idn]

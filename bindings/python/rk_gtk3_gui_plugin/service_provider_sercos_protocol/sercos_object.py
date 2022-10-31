@@ -17,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with Robotkernel-GUI.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
+from builtins import map
+from builtins import object
 import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('GLib', '2.0')
@@ -58,7 +60,7 @@ class sercos_object(object):
         self.read()
 
     def set_data(self, data):
-        map(lambda x: setattr(self, x, getattr(data, x)), data.__dict__)
+        list(map(lambda x: setattr(self, x, getattr(data, x)), data.__dict__))
         self.name = data.name.decode('cp437', 'ignore')
         self.value = data.value
         self.valid = True

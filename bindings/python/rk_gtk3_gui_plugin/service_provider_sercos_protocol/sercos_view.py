@@ -16,7 +16,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Robotkernel-GUI.  If not, see <http://www.gnu.org/licenses/>.
 '''
+from __future__ import print_function
+from __future__ import absolute_import
 
+from builtins import map
+from builtins import range
 import os, yaml
 
 import gi
@@ -28,8 +32,8 @@ from gi.repository import Gtk
 
 import helpers
 
-from sercos_device import sercos_device
-from sercos_object import sercos_object
+from .sercos_device import sercos_device
+from .sercos_object import sercos_object
 from pyutils.binary_packet import binary_packet
 
 def show_file_dialog(dialog, name=""):
@@ -273,7 +277,7 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
 
     def add(self, modname, devname):
         device_key = (modname, devname)
-        print 'adding ', device_key
+        print('adding ', device_key)
 
         if device_key not in self.devices:
             self.devices[device_key] = sercos_device(
@@ -317,7 +321,7 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
         dev_cnt = 0
 
         for dev in devices:
-            for idn, obj in dev.sercos_dictionary.items():
+            for idn, obj in list(dev.sercos_dictionary.items()):
                 obj.valid = False
 
             dlg.progressbar_devices.set_fraction(float(dev_cnt)/len(devices))
@@ -332,10 +336,10 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
                             continue
 
                         new_ids = [ x for x in eval(resp) if x not in dev.sercos_dictionary ]
-                        map(lambda x: dev.sercos_dictionary.update({ x : sercos_object(self, x) }), new_ids)
+                        list(map(lambda x: dev.sercos_dictionary.update({ x : sercos_object(self, x) }), new_ids))
 
                 cnt = 0
-                for idn, obj in dev.sercos_dictionary.items():
+                for idn, obj in list(dev.sercos_dictionary.items()):
                     if obj.valid:
                         cnt = cnt + 1
                     else:
@@ -353,7 +357,7 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
 
         dev_data = {}
         for dev in devices:
-            dev_data[dev.devname] = sorted( map(lambda x: x.yaml(), dev.sercos_dictionary.values()) )
+            dev_data[dev.devname] = sorted( [x.yaml() for x in list(dev.sercos_dictionary.values())] )
 
         file_save_dialog = Gtk.FileChooserDialog("Select File", None, Gtk.FileChooserAction.SAVE,
                 (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
@@ -395,7 +399,7 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
 
     def on_button_backup_all_clicked(self, btn):
         devices = []
-        for device_key, dev in self.devices.items():
+        for device_key, dev in list(self.devices.items()):
             devices.append(dev)
 
         self.backup_ids(devices)
@@ -410,15 +414,15 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
 
         fn = show_file_dialog(file_open_dialog)
         data = yaml.load(file(fn))
-        for slave, slave_data in data.items():
+        for slave, slave_data in list(data.items()):
             slave_dev = None
-            for device_key, dev in self.devices.items():
+            for device_key, dev in list(self.devices.items()):
                 if dev.devname == slave:
                     slave_dev = dev
                     break
 
             if not slave_dev:
-                print 'corresponding slave ', slave, ' not found!'
+                print('corresponding slave ', slave, ' not found!')
                 continue
 
             for obj in slave_data:

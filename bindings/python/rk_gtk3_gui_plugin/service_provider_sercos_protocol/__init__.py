@@ -16,10 +16,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Robotkernel-GUI.  If not, see <http://www.gnu.org/licenses/>.
 '''
+from __future__ import absolute_import
 
-from sercos_view    import *
-from sercos_device  import sercos_device
-from sercos_object  import sercos_object
+from .sercos_view    import *
+from .sercos_device  import sercos_device
+from .sercos_object  import sercos_object
 
 def init_plugin(parent):
     parent.add_service_provider_gui('sercos_protocol', sercos_view)
