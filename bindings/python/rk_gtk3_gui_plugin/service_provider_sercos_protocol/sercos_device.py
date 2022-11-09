@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Robotkernel-GUI.  If not, see <http://www.gnu.org/licenses/>.
 '''
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 from builtins import map
 from .sercos_object import sercos_object
@@ -33,7 +33,7 @@ class sercos_dict(dict):
 class sercos_device(helpers.svc_wrapper):
     def __init__(self, service_prefix, app, parent, modname, devname):
         helpers.svc_wrapper.__init__(self, app.clnt,
-                "%s.%s.%s.sercos_protocol" % (service_prefix, modname, devname))
+                "{}.{}.{}.sercos_protocol".format(service_prefix, modname, devname))
 
         self.parent = parent
         self.app = app
@@ -59,7 +59,7 @@ class sercos_device(helpers.svc_wrapper):
         list(map(lambda x: self.write_idn(command, x), [1, 3, 0]))
 
     def read_idn(self, idn):
-        #print 'sercos_device %s : reading idn %d' % (self.devname, idn)
+        #print("sercos_device {} : reading idn {}".format(self.devname, idn))
 
         # blocking read on data
         with self.lock:
@@ -73,7 +73,7 @@ class sercos_device(helpers.svc_wrapper):
         return self.read_idn_async(idn, user_cb)
 
     def read_idn_async(self, idn, user_cb):
-        #print 'sercos_device %s : reading idn %d' % (self.devname, idn)
+        print("sercos_device {} : reading idn {}".format(self.devname, idn))
 
         if not self.lock.acquire(False):
             if not self.sercos_dictionary[idn].fd_get_data:
