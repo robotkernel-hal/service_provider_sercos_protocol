@@ -18,6 +18,7 @@ along with Robotkernel-GUI.  If not, see <http://www.gnu.org/licenses/>.
 '''
 from __future__ import print_function
 from __future__ import absolute_import
+from __future__ import division
 
 from builtins import map
 from builtins import range
@@ -324,7 +325,7 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
             for idn, obj in list(dev.sercos_dictionary.items()):
                 obj.valid = False
 
-            dlg.progressbar_devices.set_fraction(float(dev_cnt)/len(devices))
+            dlg.progressbar_devices.set_fraction(float(dev_cnt) / len(devices))
             dev_cnt = dev_cnt + 1
 
             while True:
@@ -336,7 +337,7 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
                             continue
 
                         new_ids = [ x for x in eval(resp) if x not in dev.sercos_dictionary ]
-                        list(map(lambda x: dev.sercos_dictionary.update({ x : sercos_object(self, x) }), new_ids))
+                        list([dev.sercos_dictionary.update({ x : sercos_object(self, x) }) for x in new_ids])
 
                 cnt = 0
                 for idn, obj in list(dev.sercos_dictionary.items()):
@@ -345,7 +346,7 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
                     else:
                         dev.update_idn(idn)
 
-                dlg.progressbar_parametersets.set_fraction(float(cnt)/len(dev.sercos_dictionary))
+                dlg.progressbar_parametersets.set_fraction(float(cnt) /len(dev.sercos_dictionary))
                 Gtk.main_iteration()
                 import time
                 time.sleep(0.01)

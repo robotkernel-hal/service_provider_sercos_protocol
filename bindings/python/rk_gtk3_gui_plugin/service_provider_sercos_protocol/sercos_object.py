@@ -60,7 +60,7 @@ class sercos_object(object):
         self.read()
 
     def set_data(self, data):
-        list(map(lambda x: setattr(self, x, getattr(data, x)), data.__dict__))
+        list([setattr(self, x, getattr(data, x)) for x in data.__dict__])
         self.name = data.name.decode('cp437', 'ignore')
         self.value = data.value
         self.valid = True

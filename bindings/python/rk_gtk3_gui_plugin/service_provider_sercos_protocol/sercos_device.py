@@ -56,7 +56,7 @@ class sercos_device(helpers.svc_wrapper):
             self.updater_condition.notify()
 
     def set_command(self, command):
-        list(map(lambda x: self.write_idn(command, x), [1, 3, 0]))
+        list([self.write_idn(command, x) for x in [1, 3, 0]])
 
     def read_idn(self, idn):
         #print("sercos_device {} : reading idn {}".format(self.devname, idn))
@@ -106,11 +106,11 @@ class sercos_device(helpers.svc_wrapper):
                 return
 
             new_ids = [ x for x in eval(data.value) if x not in self.sercos_dictionary ]
-            list(map(lambda x: self.sercos_dictionary.update({ x : sercos_object(self, x) }), new_ids))
+            list([self.sercos_dictionary.update({ x : sercos_object(self, x) }) for x in new_ids])
 
             self.parent.update()
 
-        list(map(lambda x: self.read_idn_async(x, __cb), [17, 18, 19, 21, 22, 25]))
+        list([self.read_idn_async(x, __cb) for x in [17, 18, 19, 21, 22, 25]])
 
     def update_idn(self, idn, force=False):
         obj = self.sercos_dictionary[idn]
