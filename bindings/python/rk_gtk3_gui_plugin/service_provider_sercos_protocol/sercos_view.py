@@ -46,7 +46,7 @@ def show_file_dialog(dialog, name=""):
         return None
     fn = dialog.get_filename()
     dialog.hide()
-    Gtk.main_iteration_do()
+    Gtk.main_iteration_do(False)
     return fn
 
 class backup_all_dialog(helpers.builder_base):
@@ -414,6 +414,8 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
                 (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
 
         fn = show_file_dialog(file_open_dialog)
+        if fn is None:
+            return False
         data = yaml.load(file(fn))
         for slave, slave_data in list(data.items()):
             slave_dev = None
