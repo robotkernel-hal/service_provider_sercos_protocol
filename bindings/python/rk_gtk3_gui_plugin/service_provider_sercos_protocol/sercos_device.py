@@ -63,6 +63,7 @@ class sercos_device(helpers.svc_wrapper):
 
         # blocking read on data
         with self.lock:
+            self.svc_read_id.utf8_decode_char_fields(False)
             self.svc_read_id.req.idn = idn
             self.svc_read_id.req.elements = 0x8C
             self.svc_read_id.call()
