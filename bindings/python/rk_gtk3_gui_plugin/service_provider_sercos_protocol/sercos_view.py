@@ -301,7 +301,7 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
             return
 
         dev = self.devices[self.current_device]
-        for idn in dev.sercos_dictionary:
+        for idn in list(dev.sercos_dictionary):
             found = False
             sibling_iter = None
 
