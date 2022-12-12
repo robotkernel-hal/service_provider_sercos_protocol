@@ -302,8 +302,8 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
             return
 
         dev = self.devices[self.current_device]
-        for idn in dev.sercos_dictionary:
-            found = False
+        new_idn = set(dev.sercos_dictionary.keys()).difference(self.treestore_id_cache)
+        for idn in new_idn:
             sibling_iter = None
 
             for row in self.treestore_dictionary:
