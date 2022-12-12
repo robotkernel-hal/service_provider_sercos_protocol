@@ -47,13 +47,9 @@ class sercos_device(helpers.svc_wrapper):
         #threading.Thread(target=self.list_dictionary).start()
 
         self.ids_to_update = []
-        self.updater_stopped = False
-        threading.Thread(target=self.update_thread).start()
-
-    def __del__(self):
-        self.updater_stopped = True
-        with self.updater_condition:
-            self.updater_condition.notify()
+        thread = threading.Thread(target=self.update_thread)
+        thread.daemon = True
+        thread.start()
 
     def set_command(self, command):
         list([self.write_idn(command, x) for x in [1, 3, 0]])
