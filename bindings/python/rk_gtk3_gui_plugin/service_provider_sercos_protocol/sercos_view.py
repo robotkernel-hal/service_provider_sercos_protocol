@@ -377,10 +377,8 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
                 (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
 
         fn = show_file_dialog(file_save_dialog)
-        fd = open(fn, "w")
-        yaml_str = yaml.dump(data=dev_data, allow_unicode=True, default_flow_style=False)
-        fd.write(yaml_str)
-        fd.close()
+        with open(fn, "w") as fp:
+            yaml_str = yaml.dump(dev_data, fp, allow_unicode=True, default_flow_style=False)
 
     #CALLBACKS
     def on_togglebutton_edit_toggled(self, widget):
