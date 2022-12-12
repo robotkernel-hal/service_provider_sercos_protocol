@@ -148,7 +148,7 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
         view.set_border_width(4)
         view.set_headers_visible(True)
 
-        cell_colors = { True: self.active_color, False: 'darkgrey' }
+        cell_colors = { True: self.active_color.to_string(), False: 'darkgrey' }
 
         # ------------------ index column ------------------
         def cb_idn(column, cell, store, iter):
