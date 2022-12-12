@@ -319,10 +319,16 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
             if not found:
                 self.treestore_dictionary.insert_after(None, sibling_iter, [idn, ])
 
+    def trigger_update(self):
+        if self._idle_update_id is None:
+            self._idle_update_id = GLib.idle_add(self.update)
+        
     def update(self):
+        self._idle_update_id = None
         self.show_indices()
         self.treeview_dictionary.queue_draw()
-
+        return False
+    
     def backup_ids(self, devices):
         dlg = backup_all_dialog()
         dev_cnt = 0
