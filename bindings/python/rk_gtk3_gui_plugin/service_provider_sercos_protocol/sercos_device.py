@@ -98,16 +98,13 @@ class sercos_device(helpers.svc_wrapper):
             self.svc_write_id.call()
 
     def list_dictionary(self):
-        def __cb(data):
-            if not data.value:
-                return
-
-            new_ids = [ x for x in eval(data.value) if x not in self.sercos_dictionary ]
-            list([self.sercos_dictionary.update({ x : sercos_object(self, x) }) for x in new_ids])
-
-            self.parent.update()
-
-        list([self.read_idn_async(x, __cb) for x in [17, 18, 19, 21, 22, 25]])
+        for x in [17, 18, 19, 21, 22, 25]:
+            data = self.read_idn(x, from_gui_context=True)
+            if data.value:
+                for x in eval(data.value):
+                    if x not in self.sercos_dictionary:
+                        self.sercos_dictionary[x] = sercos_object(self, x)
+                self.parent.update()
 
     def update_idn(self, idn, force=False):
         obj = self.sercos_dictionary[idn]
