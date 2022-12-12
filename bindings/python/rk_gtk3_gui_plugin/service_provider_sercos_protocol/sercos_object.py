@@ -42,20 +42,14 @@ class sercos_object(object):
         return dict(idn=self.idn, name=self.name, value=self.value)
 
     def read(self):
-        data = self.sercos_device.read_idn(self.idn)
+        # assume called from gui context
+        data = self.sercos_device.read_idn(self.idn, from_gui_context=True)
         self.set_data(data)
         self.sercos_device.parent.update()
 
-    def read_async(self):
-        def cb_read(data):
-            self.set_data(data)
-            self.sercos_device.parent.update()
-            return False
-
-        self.sercos_device.read_idn_async(self.idn, cb_read)
-
     def write(self, value):
-        self.sercos_device.write_idn(self.idn, value)
+        # assume called from gui context
+        self.sercos_device.write_idn(self.idn, value, from_gui_context=True)
         self.valid = False
         self.read()
 
