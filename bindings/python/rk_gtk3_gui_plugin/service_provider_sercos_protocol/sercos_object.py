@@ -60,8 +60,11 @@ class sercos_object(object):
         self.read()
 
     def set_data(self, data):
-        list([setattr(self, x, getattr(data, x)) for x in data.__dict__])
-        self.name = data.name.decode('cp437', 'ignore')
-        self.value = data.value
+        for key, value in data.__dict__.items():
+            if key == "name":
+                value = value.decode('cp437', 'ignore')
+            elif key == "value":
+                value = value.decode("utf-8")            
+            setattr(self, key, value)
         self.valid = True
 
