@@ -141,6 +141,7 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
     
     def create_dictionary_treeview(self):
         self.treestore_dictionary = store = Gtk.TreeStore(int)
+        self.treestore_id_cache = set()
         view = self.treeview_dictionary
         view.set_model(store)
         view.set_border_width(4)
@@ -289,6 +290,7 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
         if not self.current_device or self.current_device != device_key:
             self.current_device = device_key
             self.treestore_dictionary.clear()
+            self.treestore_id_cache = set()
 
         self.devices[device_key].list_dictionary()
         helpers.service_provider_view.show(self)
@@ -310,6 +312,8 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
                 elif row[0] > idn:
                     sibling_iter = row.iter
                     break
+            self.treestore_dictionary.insert_after(None, sibling_iter, [idn, ])
+            self.treestore_id_cache.add(idn)
 
             if not found:
                 self.treestore_dictionary.insert_after(None, sibling_iter, [idn, ])
