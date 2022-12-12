@@ -117,7 +117,7 @@ class sercos_device(helpers.svc_wrapper):
                 self.updater_condition.notify()
 
     def update_thread(self):
-        while not self.updater_stopped:
+        while True:
             with self.updater_condition:
                 self.updater_condition.wait()
 
