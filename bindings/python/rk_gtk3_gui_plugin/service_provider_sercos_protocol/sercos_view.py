@@ -36,6 +36,7 @@ logger = logging.getLogger()
 logger.debug("loading sercos_view module")
 
 import helpers
+from helpers.gui_utils import get_str
 
 from .sercos_device import sercos_device
 from .sercos_object import sercos_object
@@ -224,7 +225,7 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
             cell.set_property("foreground", cell_colors[obj.valid])
             if obj.valid:
                 dt = idattr_get_datalength(obj.attr)
-                cell.set_property('text', idattr_datalength[dt])
+                cell.set_property('text', get_str(idattr_datalength[dt]))
             else:
                 cell.set_property('text', '--')
             return True
@@ -247,7 +248,7 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
             obj = dev.sercos_dictionary[idn]
 
             cell.set_property("foreground", cell_colors[obj.valid])
-            cell.set_property("text", obj.value)
+            cell.set_property("text", get_str(obj.value))
             return True
 
         cell_renderer = Gtk.CellRendererText()
