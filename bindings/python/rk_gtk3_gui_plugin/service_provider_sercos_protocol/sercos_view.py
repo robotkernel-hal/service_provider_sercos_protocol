@@ -305,19 +305,12 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
         new_idn = set(dev.sercos_dictionary.keys()).difference(self.treestore_id_cache)
         for idn in new_idn:
             sibling_iter = None
-
             for row in self.treestore_dictionary:
-                if row[0] == idn:
-                    found = True
-                    break
-                elif row[0] > idn:
+                if row[0] > idn:
                     sibling_iter = row.iter
                     break
             self.treestore_dictionary.insert_after(None, sibling_iter, [idn, ])
             self.treestore_id_cache.add(idn)
-
-            if not found:
-                self.treestore_dictionary.insert_after(None, sibling_iter, [idn, ])
 
     def trigger_update(self):
         if self._idle_update_id is None:
