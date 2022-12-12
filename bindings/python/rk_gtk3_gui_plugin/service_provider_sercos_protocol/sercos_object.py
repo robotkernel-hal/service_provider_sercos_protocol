@@ -39,7 +39,7 @@ class sercos_object(object):
         self.valid = False
 
     def yaml(self):
-        return dict(idn=self.idn, name=self.name.encode("utf-8"), value=self.value)
+        return dict(idn=self.idn, name=self.name, value=self.value)
 
     def read(self):
         data = self.sercos_device.read_idn(self.idn)
