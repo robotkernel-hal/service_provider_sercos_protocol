@@ -122,8 +122,9 @@ class sercos_device(helpers.svc_wrapper):
                 self.updater_condition.wait()
 
             while len(self.ids_to_update) > 0:
-                idn = self.ids_to_update.pop(0)
+                idn = self.ids_to_update[0]
                 data = self.read_idn(idn)
                 self.sercos_dictionary[idn].set_data(data)
-                self.parent.update()
+                self.ids_to_update.pop(0)
+                self.parent.trigger_update() # todo: update only changed row, and only at needed rate
 
