@@ -370,7 +370,8 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
 
         dev_data = {}
         for dev in devices:
-            dev_data[dev.devname] = sorted( [x.yaml() for x in list(dev.sercos_dictionary.values())] )
+            #dev_data[dev.devname] = [dev.sercos_dictionary[idn].yaml() for idn in sorted(dev.sercos_dictionary.keys())]
+            dev_data[dev.devname] = [x.yaml() for idn, x in sorted(dev.sercos_dictionary.items())]
 
         file_save_dialog = Gtk.FileChooserDialog("Select File", None, Gtk.FileChooserAction.SAVE,
                 (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
