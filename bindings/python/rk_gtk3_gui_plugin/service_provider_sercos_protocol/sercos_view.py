@@ -421,6 +421,7 @@ class sercos_view(helpers.service_provider_view, helpers.builder_base):
         fn = show_file_dialog(file_open_dialog)
         if fn is None:
             return False
+        # FIXME: use context manager here
         data = yaml.load(open(fn))
         for slave, slave_data in list(data.items()):
             slave_dev = None
