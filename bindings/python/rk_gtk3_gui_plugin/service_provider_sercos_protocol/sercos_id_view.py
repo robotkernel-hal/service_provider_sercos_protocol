@@ -122,9 +122,9 @@ def idattr_get_decimalpoint(attr):
 def idattr_get_datatype(attr):
     return (attr & 0x700000) >> 20
 
-class sercos_view(helpers.service_provider_view, helpers.builder_base):
+class sercos_id_view(helpers.service_provider_view, helpers.builder_base):
     def __init__(self, parent, container):
-        fn = os.path.join(os.path.dirname(__file__), 'sercos_view.ui')
+        fn = os.path.join(os.path.dirname(__file__), 'sercos_id_view.ui')
         helpers.builder_base.__init__(self, fn, 'sercos_protocol_box')
         helpers.service_provider_view.__init__(self, parent.app, parent, self.sercos_protocol_box, 'read_id')
 

@@ -18,9 +18,12 @@ along with Robotkernel-GUI.  If not, see <http://www.gnu.org/licenses/>.
 '''
 from __future__ import absolute_import
 
-from .sercos_view    import *
+from .sercos_id_view  import (show_file_dialog,
+                              backup_all_dialog,
+                              sercos_id_view,
+                              )
 from .sercos_device  import sercos_device
 from .sercos_object  import sercos_object
 
 def init_plugin(parent):
-    parent.add_service_provider_gui('sercos_protocol', sercos_view)
+    parent.add_service_provider_gui('sercos_protocol', sercos_id_view)
