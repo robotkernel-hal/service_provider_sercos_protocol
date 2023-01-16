@@ -55,8 +55,6 @@ class sercos_device(helpers.svc_wrapper):
         list([self.write_idn(command, x) for x in [1, 3, 0]])
 
     def read_idn(self, idn, from_gui_context=False):
-        #print("sercos_device {} : reading idn {}".format(self.devname, idn))
-
         # blocking read on data
         with self.lock:
             self.svc_read_id.utf8_decode_char_fields(False)
