@@ -41,9 +41,8 @@ class sercos_object(object):
     def yaml(self):
         return dict(idn=self.idn, name=self.name, value=self.value)
 
-    def read(self):
-        # assume called from gui context
-        data = self.sercos_device.read_idn(self.idn, from_gui_context=True)
+    def read(self, from_gui_context=True):
+        data = self.sercos_device.read_idn(self.idn, from_gui_context=from_gui_context)
         self.set_data(data)
         self.sercos_device.parent.update()
 
