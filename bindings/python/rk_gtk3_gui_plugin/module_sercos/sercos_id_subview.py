@@ -171,6 +171,9 @@ class sercos_id_subview(helpers.builder_base):
         return True
 
     def update_id_view(self):
+        #self.main.queue_draw() # might help, needed?
+        #self.device_view_ids.queue_draw() # dito
+
         #force update visible ids
         visible_range = self.id_view.get_visible_range()
         if visible_range == None:
@@ -183,6 +186,7 @@ class sercos_id_subview(helpers.builder_base):
         for row in range(begin[0], end[0] + 1):
             idn = self.id_store[row][0]
             sercos_device.sercos_ids[idn].valid = False
+        # self.id_view.update() # might help, needed ?
         self.id_view.queue_draw()
         return True
 

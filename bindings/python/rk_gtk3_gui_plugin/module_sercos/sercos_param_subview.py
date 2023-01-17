@@ -95,6 +95,7 @@ class sercos_param_subview(helpers.builder_base):
             dev = row[2]
             name = 'N/A'
             if 30 in dev.sercos_dictionary:
+                dev.update_idn(30)
                 idn = dev.sercos_dictionary[30]
                 name = idn.value
             cell.set_property('text', get_str(name))
@@ -207,6 +208,7 @@ class sercos_param_subview(helpers.builder_base):
             param_set.valid_set = [False] * 10
         self.param_view.queue_draw()
         self.params_model_view.queue_draw()
+        self.device_view_params.queue_draw()
         return True
 
     #CALLBACKS
