@@ -178,14 +178,25 @@ class sercos_processdata_subview(helpers.builder_base):
 
         if obj.datalength == 2: # 4-byte-fix
             if obj.datatype == 0 or obj.datatype == 2:
-                value = np.int32(data[0] | (data[1] << 8) | (data[2] << 16) | (data[3] << 24)) * np.power(10.0, obj.decimalpoint * -1)
+                value = np.int32(data[0]
+                                 | (data[1] << 8)
+                                 | (data[2] << 16)
+                                 | (data[3] << 24)) * np.power(10.0, obj.decimalpoint * -1)
+                
             elif obj.datatype == 1 or obj.datatype == 3 or obj.datatype == 5:
-                value = np.uint32(data[0] | (data[1] << 8) | (data[2] << 16) | (data[3] << 24)) * np.power(10.0, obj.decimalpoint * -1)
+                value = np.uint32(data[0]
+                                  | (data[1] << 8)
+                                  | (data[2] << 16)
+                                  | (data[3] << 24)) * np.power(10.0, obj.decimalpoint * -1)
+                
         else: # 1 : # 2-byte-fix
             if obj.datatype == 0 or obj.datatype == 2:
-                value = np.int16(data[0] | (data[1] << 8)) * np.power(10.0, obj.decimalpoint * -1)
+                value = np.int16(data[0]
+                                 | (data[1] << 8)) * np.power(10.0, obj.decimalpoint * -1)
+                
             elif obj.datatype == 1 or obj.datatype == 3 or obj.datatype == 5:
-                value = np.uint16(data[0] | (data[1] << 8)) * np.power(10.0, obj.decimalpoint * -1)
+                value = np.uint16(data[0]
+                                  | (data[1] << 8)) * np.power(10.0, obj.decimalpoint * -1)
 
         if obj.decimalpoint:
             cell.set_property('text', '%7.3f' % value)
