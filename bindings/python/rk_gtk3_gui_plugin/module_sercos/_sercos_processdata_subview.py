@@ -21,10 +21,6 @@ import helpers
 import links_and_nodes as ln
 from pyutils.binary_packet import binary_packet
 
-#from . import _sercos_wrapper # is this actually needed?
-
-
-
 
 class sercos_processdata_subview(helpers.builder_base):
     def __init__(self, parent_window, name, app, device_store):
