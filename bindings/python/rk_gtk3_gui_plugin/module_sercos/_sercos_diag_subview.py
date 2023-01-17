@@ -10,11 +10,9 @@ import traceback
 import gi
 import yaml
 from gi.repository import GObject, Gtk, Gdk
-#from numpy import *
 
 import helpers
 from helpers.gui_utils import get_str
-import links_and_nodes as ln
 
 #from . import _sercos_wrapper
 
