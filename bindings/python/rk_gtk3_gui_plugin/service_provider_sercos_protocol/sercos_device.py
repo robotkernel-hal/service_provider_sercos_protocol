@@ -92,7 +92,11 @@ class sercos_device(helpers.svc_wrapper):
         for x in [17, 18, 19, 21, 22, 25]:
             data = self.read_idn(x, from_gui_context=True)
             if data.value:
-                for x in eval(data.value):
+                vals = eval(data.value)
+                # wrap single int value as edge case
+                if type(vals) is int:
+                    vals = [ vals, ]
+                for x in vals:
                     if x not in self.sercos_dictionary:
                         self.sercos_dictionary[x] = sercos_object(self, x)
                 self.parent.update()
