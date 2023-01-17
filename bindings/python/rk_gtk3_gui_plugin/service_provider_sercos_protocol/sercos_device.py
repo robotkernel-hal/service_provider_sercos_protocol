@@ -51,6 +51,13 @@ class sercos_device(helpers.svc_wrapper):
         thread.daemon = True
         thread.start()
 
+
+    def device_id(self):
+        """return a constant id which is unique for a device and
+        the same for different instances of the same device"""
+        
+        return (self.prefix, self.modname, self.devname)
+    
     def set_command(self, command):
         list([self.write_idn(command, x) for x in [1, 3, 0]])
 
