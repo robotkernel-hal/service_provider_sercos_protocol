@@ -262,6 +262,7 @@ class sercos_view(helpers.builder_base):
         #self.id_view.id_view.show_indices()
         self.id_view.main.queue_draw()
         self.id_view.id_view.update()
+        #self.id_view.update_id_view() # updates visible part, which is better?
         self.processdata_view.update_view()
 
     def trigger_update(self):
