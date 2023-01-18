@@ -21,6 +21,9 @@ import helpers
 import links_and_nodes as ln
 from pyutils.binary_packet import binary_packet
 
+import logging
+logger = logging.getLogger()
+logger.debug("loading _sercos_processdata_subview module")
 
 class sercos_processdata_subview(helpers.builder_base):
     def __init__(self, parent_window, name, app, device_store):
@@ -45,6 +48,14 @@ class sercos_processdata_subview(helpers.builder_base):
     def create_views(self):
         self.liststore_act, self.treeview_act, self.act_columns = self.create_view(16)
         self.sw_act = self.builder.get_object("top") #scrolledwindow
+        # before adding the treeview possibly twice, which would
+        # be an error, remove any existing children.
+        for chld in self.sw_act.get_children():
+            self.sw_act.remove(chld)
+            
+        # if the next line fails, this is possibly because the
+        # treeview is re-added, and has still a wrapping GTK viewport as parent,
+        # which was added automatically by the previous add() call.
         self.sw_act.add(self.treeview_act)
 
         for d in self.device_store:
@@ -52,6 +63,8 @@ class sercos_processdata_subview(helpers.builder_base):
 
         self.liststore_des, self.treeview_des, self.des_columns = self.create_view(24)
         self.sw_des = self.builder.get_object("bottom") #scrolledwindow
+        for chld in self.sw_des.get_children():
+            self.sw_des.remove(chld)
         self.sw_des.add(self.treeview_des)
 
         for d in self.device_store:
