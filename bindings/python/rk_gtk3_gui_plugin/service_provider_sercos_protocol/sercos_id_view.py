@@ -396,6 +396,15 @@ class sercos_id_view(helpers.service_provider_view, helpers.builder_base):
 
         return True
 
+    def on_tv_row_activated(self, path, column):
+        dev = self.devices[self.current_device]
+        dev.list_dictionary()
+
+        row = self.treestore_dictionary.get_iter(path)
+        idn = self.treestore_dictionary[row][0]
+        dev.update_idn(idn, force=True)
+        
+
     def on_edit_sercos_value(self, cr, path, newvalue):
         it = self.treestore_dictionary.get_iter(path)
         idn = self.treestore_dictionary[it][0]
