@@ -21,7 +21,7 @@ import links_and_nodes as ln
 from service_provider_sercos_protocol import (sercos_device, sercos_object,
                                               # the following class is
                                               # shadowed by the definition below
-                                              # sercos_view
+                                              # sercos_id_view
                                               )
 
 from . import (_sercos_diag_subview,
