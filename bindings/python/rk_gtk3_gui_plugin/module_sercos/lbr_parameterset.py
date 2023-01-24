@@ -22,7 +22,7 @@ from builtins import object
 import math
 import sys
 import threading
-
+from os import environ
 
 class lbr_parameterset(object):
     def __init__(self, device, set_number, set_name):
@@ -69,6 +69,18 @@ class lbr_parameterset(object):
         self.valid_set = [False] * 10
 
     def get_parameters(self, force_update=False):
+        """
+        Get sercos parameters.
+
+        This function can be called from the GUI thread.
+        """
+        debug = environ.get("DEBUG_SERCOS", "")
+        if bool(debug) and (debug != "0"):
+            print("lbr_parameterset.get_parameters():"
+                  " getting parameters for device = {}, number = {}, name {}".format(
+                      self.sercos_device.devname,
+                      self.number,
+                      self.name))
         # everything already loaded
         if all(self.valid_set) and not force_update:
             return

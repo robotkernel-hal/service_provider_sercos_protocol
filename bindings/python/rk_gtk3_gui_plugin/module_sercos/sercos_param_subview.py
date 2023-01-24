@@ -167,36 +167,21 @@ class sercos_param_subview(helpers.builder_base):
 
     def backup_parametersets(self, devices):
         dlg = backup_all_dialog()
-        dev_cnt = 0
 
-        for dev in devices:
-            dlg.progressbar_devices.set_fraction(float(dev_cnt)/len(devices))
-            dev_cnt = dev_cnt + 1
+        for dev_cnt, dev in enumerate(devices, start=0):
+            dlg.progressbar_devices.set_fraction(float(dev_cnt + 0.5)/len(devices))
 
-            while True:
-                cnt = 0
-                for nr, parameterset in list(dev.sercos_parametersets.items()):
-                    if all(parameterset.valid_set):
-                        cnt = cnt + 1
-                    else:
-                        parameterset.get_parameters()
-
-                dlg.progressbar_parametersets.set_fraction(float(cnt)/len(dev.sercos_parametersets))
-                Gtk.main_iteration()
-                import time
-                time.sleep(0.01)
-
-                if cnt == len(dev.sercos_parametersets):
-                    break
+            display_func = dlg.progressbar_parametersets.set_fraction
+            dev.retrieve_sercos_parametersets(progress_display_func=display_func)
 
         dlg.dialog_backup_all.hide()
 
-        fn = show_file_dialog(self.parent.file_save_dialog)
+        dev_data = {}
+        for dev in devices:
+            dev_data[dev.devname] = dev.get_parametersets_as_yaml()
+            
+        fn = show_file_dialog(self.parent.file_save_dialog)        
         with open(fn, "w") as fd:
-            dev_data = {}
-            for dev in devices:
-                dev_data[dev.devname] = [x.yaml() for x in list(dev.sercos_parametersets.values())]
-
             yaml.dump(dev_data, fd, default_flow_style=False)
 
     def update_param_view(self):
