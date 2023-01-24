@@ -86,7 +86,7 @@ class lbr_parameterset(object):
             return
 
         # another parameterset is currently updating
-        if not self.sercos_device.parameter_lock.acquire(0):
+        if not self.sercos_device.parameter_lock.acquire(blocking=False):
             if not self.fd_get_data:
                 self.fd_get_data = threading.Timer(0.01, self.update_callback, args=(force_update, ))
                 self.fd_get_data.start()
