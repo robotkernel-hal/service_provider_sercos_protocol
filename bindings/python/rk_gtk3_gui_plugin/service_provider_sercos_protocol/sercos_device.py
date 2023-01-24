@@ -122,3 +122,43 @@ class sercos_device(helpers.svc_wrapper):
                 self.ids_to_update.pop(0)
                 self.parent.trigger_update() # todo: update only changed row, and only at needed rate
 
+    def retrieve_dictionary(self, progress_display_func=None):
+        
+        for idn, obj in list(self.sercos_dictionary.items()):
+            obj.valid = False
+
+        while True:
+           if len(dev.sercos_dictionary) == 0:
+               for list_idn in [17, 18, 19, 21, 22, 25]:
+                   resp = self.read_idn(list_idn).value
+
+                   if not resp:
+                       continue
+
+                   new_ids = [ x for x in eval(resp) if x not in dev.sercos_dictionary ]
+                   for x in new_ids:
+                       self.sercos_dictionary.update({ x : sercos_object(self, x) })
+                         
+
+           cnt = 0
+           for idn, obj in list(self.sercos_dictionary.items()):
+               if obj.valid:
+                   cnt = cnt + 1
+               else:
+                   self.update_idn(idn)
+
+           if progress_display_func is not None:
+               progress_display_func(float(cnt) /len(self.sercos_dictionary))
+
+           Gtk.main_iteration()
+           time.sleep(0.01)
+
+           if cnt == len(self.sercos_dictionary):
+               break
+
+    def get_dictionary_as_yaml(self):
+        #dev_data[dev.devname] = [dev.sercos_dictionary[idn].yaml()
+        #                         for idn in sorted(dev.sercos_dictionary.keys())]
+        
+        return [x.yaml() for idn, x in sorted(dev.sercos_dictionary.items())]
+        

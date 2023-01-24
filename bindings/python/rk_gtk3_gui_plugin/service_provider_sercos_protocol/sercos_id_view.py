@@ -327,45 +327,16 @@ class sercos_id_view(helpers.service_provider_view, helpers.builder_base):
         dlg = backup_all_dialog()
         dev_cnt = 0
 
-        for dev in devices:
-            for idn, obj in list(dev.sercos_dictionary.items()):
-                obj.valid = False
+        for idx, dev in enumerate(devices, start=1):
+            dev.load_dictionary(progress_display_func=dlg.progressbar_parametersets.set_fraction)
 
-            dlg.progressbar_devices.set_fraction(float(dev_cnt) / len(devices))
-            dev_cnt = dev_cnt + 1
-
-            while True:
-                if len(dev.sercos_dictionary) == 0:
-                    for list_idn in [17, 18, 19, 21, 22, 25]:
-                        resp = dev.read_idn(list_idn).value
-
-                        if not resp:
-                            continue
-
-                        new_ids = [ x for x in eval(resp) if x not in dev.sercos_dictionary ]
-                        list([dev.sercos_dictionary.update({ x : sercos_object(self, x) }) for x in new_ids])
-
-                cnt = 0
-                for idn, obj in list(dev.sercos_dictionary.items()):
-                    if obj.valid:
-                        cnt = cnt + 1
-                    else:
-                        dev.update_idn(idn)
-
-                dlg.progressbar_parametersets.set_fraction(float(cnt) /len(dev.sercos_dictionary))
-                Gtk.main_iteration()
-                import time
-                time.sleep(0.01)
-
-                if cnt == len(dev.sercos_dictionary):
-                    break
+            dlg.progressbar_devices.set_fraction(float(idx) / len(devices))
 
         dlg.dialog_backup_all.hide()
 
         dev_data = {}
         for dev in devices:
-            #dev_data[dev.devname] = [dev.sercos_dictionary[idn].yaml() for idn in sorted(dev.sercos_dictionary.keys())]
-            dev_data[dev.devname] = [x.yaml() for idn, x in sorted(dev.sercos_dictionary.items())]
+            dev_data[dev.devname] = dev.get_dictionary_as_yaml()
 
         file_save_dialog = Gtk.FileChooserDialog("Select File", None, Gtk.FileChooserAction.SAVE,
                 (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
