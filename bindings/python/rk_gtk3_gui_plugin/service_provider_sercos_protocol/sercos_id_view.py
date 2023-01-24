@@ -325,12 +325,13 @@ class sercos_id_view(helpers.service_provider_view, helpers.builder_base):
     
     def backup_ids(self, devices):
         dlg = backup_all_dialog()
-        dev_cnt = 0
 
-        for idx, dev in enumerate(devices, start=1):
-            dev.load_dictionary(progress_display_func=dlg.progressbar_parametersets.set_fraction)
+        for dev_cnt, dev in enumerate(devices, start=0):            
+            dlg.progressbar_devices.set_fraction(float(dev_cnt) / len(devices))
 
-            dlg.progressbar_devices.set_fraction(float(idx) / len(devices))
+            display_func = dlg.progressbar_parametersets.set_fraction
+            dev.load_dictionary(progress_display_func=display_func)
+
 
         dlg.dialog_backup_all.hide()
 

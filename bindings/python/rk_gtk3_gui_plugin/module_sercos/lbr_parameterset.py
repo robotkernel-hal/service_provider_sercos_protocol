@@ -69,6 +69,11 @@ class lbr_parameterset(object):
         self.valid_set = [False] * 10
 
     def get_parameters(self, force_update=False):
+        """
+        Get sercos parameters.
+
+        This function can be called from the GUI thread.
+        """
         # everything already loaded
         if all(self.valid_set) and not force_update:
             return

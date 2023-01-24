@@ -123,14 +123,21 @@ class sercos_device(helpers.svc_wrapper):
                 self.parent.trigger_update() # todo: update only changed row, and only at needed rate
 
     def retrieve_dictionary(self, progress_display_func=None):
-        
+        """retrieve sercos dictionary for storing it in a backup.
+        This method is called from the GUI thread.
+
+        progress_display_func is a handle to a function which
+        can display the progress of the retrival operation
+        in a progress bar, so that 0 means "nothing finished"
+        and 1.0 means "all finished".
+        """
         for idn, obj in list(self.sercos_dictionary.items()):
             obj.valid = False
 
         while True:
            if len(dev.sercos_dictionary) == 0:
                for list_idn in [17, 18, 19, 21, 22, 25]:
-                   resp = self.read_idn(list_idn).value
+                   resp = self.read_idn(list_idn, from_gui_context=True).value
 
                    if not resp:
                        continue
