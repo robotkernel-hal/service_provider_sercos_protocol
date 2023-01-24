@@ -97,7 +97,11 @@ class lbr_parameterset(object):
                 self.valid_set[i] = True
                 self.parameters[i][1] = int(mantisse) * pow(10, int(exponent))
 
-                self.sercos_device.parent.update()
+                # warning: sercos_view.update() must _only_
+                # be called in the GUI thread!
+                # (also, updating every single time is probably to heavy,
+                # and trigger_update() takes care of that, too).
+                self.sercos_device.parent.trigger_update()
 
             self.sercos_device.parameter_lock.release()
 
