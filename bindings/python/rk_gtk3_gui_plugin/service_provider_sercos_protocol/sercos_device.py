@@ -18,6 +18,11 @@ along with Robotkernel-GUI.  If not, see <http://www.gnu.org/licenses/>.
 '''
 from __future__ import absolute_import, print_function
 
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
+
+
 from builtins import map
 from .sercos_object import sercos_object
 import time, helpers, threading, copy

@@ -368,11 +368,16 @@ class sercos_id_view(helpers.service_provider_view, helpers.builder_base):
 
         return True
 
-    def on_tv_row_activated(self, path, column):
+    def on_tv_row_activated(self, view, row, column):
+        #print("on_tv_row_activated(): view={}, path = {}, column = {}".format(
+        #    view, row, column))
+        if (row is None):
+            print("on_tv_row_activated(): path empty, skipping row update")
+            return False
+        
         dev = self.devices[self.current_device]
         dev.list_dictionary()
 
-        row = self.treestore_dictionary.get_iter(path)
         idn = self.treestore_dictionary[row][0]
         dev.update_idn(idn, force=True)
         
