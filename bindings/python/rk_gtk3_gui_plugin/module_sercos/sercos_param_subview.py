@@ -169,7 +169,7 @@ class sercos_param_subview(helpers.builder_base):
         dlg = backup_all_dialog()
 
         for dev_cnt, dev in enumerate(devices, start=0):
-            dlg.progressbar_devices.set_fraction(float(dev_cnt)/len(devices))
+            dlg.progressbar_devices.set_fraction(float(dev_cnt + 0.5)/len(devices))
 
             display_func = dlg.progressbar_parametersets.set_fraction
             dev.retrieve_sercos_parametersets(progress_display_func=display_func)

@@ -185,7 +185,7 @@ class lbr_device(sercos_device):
             Gtk.main_iteration()
             time.sleep(0.01)
 
-            if cnt == len(dev.sercos_parametersets):
+            if cnt == len(self.sercos_parametersets):
                 break
 
     def get_parametersets_as_yaml(self):

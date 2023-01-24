@@ -140,14 +140,14 @@ class sercos_device(helpers.svc_wrapper):
             obj.valid = False
 
         while True:
-           if len(dev.sercos_dictionary) == 0:
+           if len(self.sercos_dictionary) == 0:
                for list_idn in [17, 18, 19, 21, 22, 25]:
                    resp = self.read_idn(list_idn, from_gui_context=True).value
 
                    if not resp:
                        continue
 
-                   new_ids = [ x for x in eval(resp) if x not in dev.sercos_dictionary ]
+                   new_ids = [ x for x in eval(resp) if x not in self.sercos_dictionary ]
                    for x in new_ids:
                        self.sercos_dictionary.update({ x : sercos_object(self, x) })
                          
@@ -172,5 +172,5 @@ class sercos_device(helpers.svc_wrapper):
         #dev_data[dev.devname] = [dev.sercos_dictionary[idn].yaml()
         #                         for idn in sorted(dev.sercos_dictionary.keys())]
         
-        return [x.yaml() for idn, x in sorted(dev.sercos_dictionary.items())]
+        return [x.yaml() for idn, x in sorted(self.sercos_dictionary.items())]
         
