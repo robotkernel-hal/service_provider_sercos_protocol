@@ -187,6 +187,10 @@ class lbr_device(sercos_device):
 
             if cnt == len(self.sercos_parametersets):
                 break
+            
+            print("retrieve_sercos_parametersets(): {} out of {}"
+                  " parametersets retrieved, retrying...".format(
+                      cnt, len(self.sercos_parametersets)))
 
     def get_parametersets_as_yaml(self):
         return [x.yaml() for x in list(self.sercos_parametersets.values())]
