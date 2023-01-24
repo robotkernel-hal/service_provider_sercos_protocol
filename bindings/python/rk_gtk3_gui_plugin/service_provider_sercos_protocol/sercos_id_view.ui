@@ -335,6 +335,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <signal name="button-press-event" handler="on_key_value_tv_button_press_event" swapped="no"/>
+                <signal name="row-activated" handler="on_tv_row_activated" swapped="no"/>
                 <child internal-child="selection">
                   <object class="GtkTreeSelection"/>
                 </child>
