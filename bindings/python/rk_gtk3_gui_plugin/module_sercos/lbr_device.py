@@ -159,3 +159,33 @@ class lbr_device(sercos_device):
             setattr(self.sercos_dictionary[id], "datatype", idattr_get_datatype(attr))
             offset = offset + (2*datalength)
         return True
+
+    def retrieve_sercos_parametersets(self, progress_display_func=None):
+        """retrieve parameters for backing them up.
+        This function is called from the GUI thread.
+
+        progress_display_func is a handle to a function which
+        can display the progress of the retrival operation
+        in a progress bar, so that 0 means "nothing finished"
+        and 1.0 means "all finished".
+        """
+        while True:
+            cnt = 0
+            for nr, parameterset in list(self.sercos_parametersets.items()):
+                if all(parameterset.valid_set):
+                    cnt = cnt + 1
+                else:
+                    parameterset.get_parameters()
+
+            if progress_display_func is not None:
+                progress_display_func(float(cnt)/len(self.sercos_parametersets))
+
+            Gtk.main_iteration()
+            time.sleep(0.01)
+
+            if cnt == len(dev.sercos_parametersets):
+                break
+
+    def get_parametersets_as_yaml(self):
+        return [x.yaml() for x in list(self.sercos_parametersets.values())]
+
