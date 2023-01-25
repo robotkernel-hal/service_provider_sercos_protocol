@@ -33,6 +33,7 @@ class lbr_parameterset(object):
 
         self.valid_set = [False] * 10
         self.fd_get_data = None
+        self.valid_condition = threading.Condition()
 
         self.m_base = 33034
         self.e_base = 33053
@@ -66,7 +67,8 @@ class lbr_parameterset(object):
             self.sercos_device.sercos_dictionary[self.m_base + i].valid = False
             self.sercos_device.sercos_dictionary[self.e_base + i].valid = False
 
-        self.valid_set = [False] * 10
+        with self.valid_condition:
+            self.valid_set = [False] * 10
 
     def get_parameters(self, force_update=False):
         """
@@ -88,7 +90,7 @@ class lbr_parameterset(object):
         # another parameterset is currently updating
         if not self.sercos_device.parameter_lock.acquire(blocking=False):
             if not self.fd_get_data:
-                self.fd_get_data = threading.Timer(0.01, self.update_callback, args=(force_update, ))
+                self.fd_get_data = threading.Timer(0.1, self.update_callback, args=(force_update, ))
                 self.fd_get_data.start()
 
             return
@@ -116,8 +118,25 @@ class lbr_parameterset(object):
                 self.sercos_device.parent.trigger_update()
 
             self.sercos_device.parameter_lock.release()
+            with self.valid_condition:
+                self.valid_condition.notify_all()
 
         threading.Thread(target=update, args=(self, )).start()
+
+    def all_valid(self):
+        """returns True if all parameters of this set are currently valid.
+        """
+        with self.valid_condition:
+            return all(self.valid_set)
+        
+    
+    def wait_for_all_valid(self, timeout=0.05):
+        """waits up to timeout time for all parameters to become valid,
+        then return whether that happened or not yet."""
+
+        with self.valid_condition:
+            self.valid_condition.wait_for(self.all_valid, timeout=timeout)
+        return self.all_valid()
 
     def set_parameter(self, parameter_number, newvalue, select_set=True, enable_set=True):
         # sets a single parameter, but updates the complete set afterwards

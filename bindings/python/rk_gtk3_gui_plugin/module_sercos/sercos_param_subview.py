@@ -20,12 +20,23 @@ from helpers.gui_utils import get_str
 import links_and_nodes as ln
 from service_provider_sercos_protocol import backup_all_dialog
 
+from service_provider_sercos_protocol.sercos_id_view import show_file_dialog
 
 logger = logging.getLogger()
 
 
 
+# this is already contained in service_provider_sercos_protocol,
+# and does not need to be duplicated.
 
+#class backup_all_dialog(helpers.builder_base):
+#    def __init__(self):
+#        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sercos_dialog_backup_all.ui')
+#        helpers.builder_base.__init__(self, fn, 'dialog_backup_all')
+#
+#        self.dialog_backup_all.set_position(Gtk.WindowPosition.CENTER_ALWAYS)
+#        self.dialog_backup_all.show_all()
+#
 
 
 class sercos_param_subview(helpers.builder_base):
@@ -166,7 +177,11 @@ class sercos_param_subview(helpers.builder_base):
         return model[iter][2] #device_id, device_name, pyobject
 
     def backup_parametersets(self, devices):
+        # for some reason this dialog does not shows up
         dlg = backup_all_dialog()
+        
+        blocking = False
+        Gtk.main_iteration_do(blocking)
 
         for dev_cnt, dev in enumerate(devices, start=0):
             dlg.progressbar_devices.set_fraction(float(dev_cnt + 0.5)/len(devices))
@@ -180,6 +195,14 @@ class sercos_param_subview(helpers.builder_base):
         for dev in devices:
             dev_data[dev.devname] = dev.get_parametersets_as_yaml()
             
+        file_save_dialog = Gtk.FileChooserDialog("Select File",
+                                                 None,
+                                                 Gtk.FileChooserAction.SAVE,
+                                                 (Gtk.STOCK_CANCEL,
+                                                  Gtk.ResponseType.CANCEL,
+                                                  Gtk.STOCK_SAVE,
+                                                  Gtk.ResponseType.OK))
+        
         fn = show_file_dialog(self.parent.file_save_dialog)        
         with open(fn, "w") as fd:
             yaml.dump(dev_data, fd, default_flow_style=False)

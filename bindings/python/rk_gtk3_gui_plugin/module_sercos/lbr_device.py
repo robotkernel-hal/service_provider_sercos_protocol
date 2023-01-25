@@ -174,16 +174,25 @@ class lbr_device(sercos_device):
         while True:
             cnt = 0
             for nr, parameterset in list(self.sercos_parametersets.items()):
-                if all(parameterset.valid_set):
+                if parameterset.all_valid():
                     cnt = cnt + 1
                 else:
                     parameterset.get_parameters()
+                    # wait a moment because the device connection
+                    # is busy anyway
+                    if parameterset.wait_for_all_valid(timeout=0.5):
+                        print("retrieve_sercos_parametersets(): got new params for {}!".format(cnt))
+                        cnt = cnt + 1
+                    else:
+                        print("retrieve_sercos_parametersets(): still waiting for {}!".format(cnt))
+
 
             if progress_display_func is not None:
                 progress_display_func(float(cnt)/len(self.sercos_parametersets))
 
-            Gtk.main_iteration()
-            time.sleep(0.01)
+            blocking = False
+            Gtk.main_iteration_do(blocking)
+            time.sleep(0.2)
 
             if cnt == len(self.sercos_parametersets):
                 break
