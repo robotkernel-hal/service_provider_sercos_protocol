@@ -274,6 +274,8 @@ class sercos_view(helpers.builder_base):
         # It is called from sercos_device.
         if self._idle_update_id is None:
             self._idle_update_id = GLib.idle_add(self.update)
-            GLib.timeout_add(1.0, self.param_view.update_param_view, False)
+            text = helpers.gui_utils.get_current_nb_text(self.notebook)
+            if text == "sercos parameter":
+                GLib.timeout_add(1.0, self.param_view.update_param_view, False)
         
     
