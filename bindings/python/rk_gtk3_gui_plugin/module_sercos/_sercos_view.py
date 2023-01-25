@@ -227,7 +227,7 @@ class sercos_view(helpers.builder_base):
         if text == "sercos ids":
             self.id_view.update_id_view(widget)
         if text == "sercos parameter":
-            self.param_view.update_param_view(widget, force=False)
+            self.param_view.update_param_view(force=False)
         return True
 
 
@@ -253,8 +253,8 @@ class sercos_view(helpers.builder_base):
         if text == "process data" and not self.processdata_view.views_created:
             self.processdata_view.create_views()
             
-        if text == "sercos parameter":
-            self.param_view.update_param_view(widget, force=False)
+        #if text == "sercos parameter":
+        #    self.param_view.update_param_view(widget, force=False)
 
         return True
 
