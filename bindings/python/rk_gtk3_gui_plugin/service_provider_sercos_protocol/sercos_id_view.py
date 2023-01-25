@@ -54,14 +54,29 @@ def show_file_dialog(dialog, name=""):
     Gtk.main_iteration_do(False)
     return fn
 
-class backup_all_dialog(helpers.builder_base):
-    def __init__(self):
-        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sercos_dialog_backup_all.ui')
-        helpers.builder_base.__init__(self, fn, 'dialog_backup_all')
+class BackupDialog(helpers.builder_base):
+    
+    def __init__(self, filename, base_object, parent):        
+        helpers.builder_base.__init__(self, filename, base_object)
 
         self.dialog_backup_all.set_position(Gtk.WindowPosition.CENTER_ALWAYS)
+        self.dialog_backup_all.parent = parent
+
         self.dialog_backup_all.show_all()
 
+    def queue_draw(self):
+        self.dialog_backup_all.queue_draw()
+
+    def keep_above(self):
+        self.dialog_backup_all.set_keep_above(True)
+
+
+def backup_all_dialog(parent):
+    # note that helpers.builder_base behaves differently depending on
+    # whether fn is an absolute path or not.
+    fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sercos_dialog_backup_all.ui')
+    return BackupDialog(fn, 'dialog_backup_all', parent)
+                        
 """
 typedef struct sercos_service_attribute {
     uint16_t conversionfactor;
@@ -324,7 +339,7 @@ class sercos_id_view(helpers.service_provider_view, helpers.builder_base):
         return False
     
     def backup_ids(self, devices):
-        dlg = backup_all_dialog()
+        dlg = backup_all_dialog(self.parent)
 
         for dev_cnt, dev in enumerate(devices, start=0):            
             dlg.progressbar_devices.set_fraction(float(dev_cnt + 0.5) / len(devices))

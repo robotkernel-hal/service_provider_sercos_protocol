@@ -18,25 +18,15 @@ from gi.repository import GObject, Gtk, Gdk
 import helpers
 from helpers.gui_utils import get_str
 import links_and_nodes as ln
-from service_provider_sercos_protocol import backup_all_dialog
 
-from service_provider_sercos_protocol.sercos_id_view import show_file_dialog
+from service_provider_sercos_protocol.sercos_id_view import show_file_dialog, BackupDialog
 
 logger = logging.getLogger()
 
+def backup_parameters_dialog(parent_window):
+    fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sercos_dialog_backup_parameters.ui')
+    return BackupDialog(fn, 'dialog_backup_all', parent_window)
 
-
-# this is already contained in service_provider_sercos_protocol,
-# and does not need to be duplicated.
-
-#class backup_all_dialog(helpers.builder_base):
-#    def __init__(self):
-#        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sercos_dialog_backup_all.ui')
-#        helpers.builder_base.__init__(self, fn, 'dialog_backup_all')
-#
-#        self.dialog_backup_all.set_position(Gtk.WindowPosition.CENTER_ALWAYS)
-#        self.dialog_backup_all.show_all()
-#
 
 
 class sercos_param_subview(helpers.builder_base):
@@ -163,6 +153,7 @@ class sercos_param_subview(helpers.builder_base):
 
         n = int(row[0].split(" ")[-1])
         sercos_parameterset.get_parameters()
+        sercos_parameterset.wait_for_all_valid(timeout=0.005)
         cell.set_property("text", get_str(sercos_parameterset.parameters[n][1]))
         if not sercos_parameterset.valid_set[n]:
             cell.set_property("foreground", "grey")
@@ -177,16 +168,33 @@ class sercos_param_subview(helpers.builder_base):
         return model[iter][2] #device_id, device_name, pyobject
 
     def backup_parametersets(self, devices):
-        # for some reason this dialog does not shows up
-        dlg = backup_all_dialog()
+        # for some reason this dialog takes a veeeery long time to
+        # show up. This is normally not a problem, it is just
+        # not visible.
+        # However, if the backup hangs and deadlocks, this
+        # is probably the robotkernel device which can't
+        # sustain that much written communication.
         
-        blocking = False
+        dlg = backup_parameters_dialog(self.parent)
+        dlg.keep_above()
+        
+        blocking=False
         Gtk.main_iteration_do(blocking)
-
+        Gtk.main_iteration()
+        
+        
         for dev_cnt, dev in enumerate(devices, start=0):
             dlg.progressbar_devices.set_fraction(float(dev_cnt + 0.5)/len(devices))
+            dlg.queue_draw()
+            
+            #blocking=False
+            #Gtk.main_iteration_do(blocking)
+            Gtk.main_iteration()
 
-            display_func = dlg.progressbar_parametersets.set_fraction
+            def display_func(frac):
+                dlg.progressbar_parametersets.set_fraction(frac)
+                dlg.queue_draw()
+                
             dev.retrieve_sercos_parametersets(progress_display_func=display_func)
 
         dlg.dialog_backup_all.hide()
@@ -207,13 +215,14 @@ class sercos_param_subview(helpers.builder_base):
         with open(fn, "w") as fd:
             yaml.dump(dev_data, fd, default_flow_style=False)
 
-    def update_param_view(self):
-        #force update all paraemters
+    def update_param_view(self, force=True):
+        #force update all parameters
         sercos_device = self.get_selected_device()
         if sercos_device is None:
             return True
-        for name, param_set in list(sercos_device.sercos_parametersets.items()):
-            param_set.valid_set = [False] * 10
+        if force:
+            for name, param_set in list(sercos_device.sercos_parametersets.items()):
+                param_set.valid_set = [False] * 10
         self.param_view.queue_draw()
         self.params_model_view.queue_draw()
         self.device_view_params.queue_draw()

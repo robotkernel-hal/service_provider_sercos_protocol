@@ -70,7 +70,7 @@ class lbr_parameterset(object):
         with self.valid_condition:
             self.valid_set = [False] * 10
 
-    def get_parameters(self, force_update=False):
+    def get_parameters(self, force_update=False, repeat_interval=0.1):
         """
         Get sercos parameters.
 
@@ -90,7 +90,7 @@ class lbr_parameterset(object):
         # another parameterset is currently updating
         if not self.sercos_device.parameter_lock.acquire(blocking=False):
             if not self.fd_get_data:
-                self.fd_get_data = threading.Timer(0.1, self.update_callback, args=(force_update, ))
+                self.fd_get_data = threading.Timer(repeat_interval, self.update_callback, args=(force_update, ))
                 self.fd_get_data.start()
 
             return

@@ -227,7 +227,7 @@ class sercos_view(helpers.builder_base):
         if text == "sercos ids":
             self.id_view.update_id_view(widget)
         if text == "sercos parameter":
-            self.param_view.update_param_view(widget)
+            self.param_view.update_param_view(widget, force=False)
         return True
 
 
@@ -252,13 +252,16 @@ class sercos_view(helpers.builder_base):
 
         if text == "process data" and not self.processdata_view.views_created:
             self.processdata_view.create_views()
+            
+        if text == "sercos parameter":
+            self.param_view.update_param_view(widget, force=False)
 
         return True
 
     def update(self):
         # this needs to run in GTK mainloop context
         self._idle_update_id = None
-        self.param_view.update_param_view()
+        self.param_view.update_param_view(force=False)
         #self.id_view.id_view.show_indices()
         self.id_view.main.queue_draw()
         self.id_view.id_view.update()
@@ -271,5 +274,6 @@ class sercos_view(helpers.builder_base):
         # It is called from sercos_device.
         if self._idle_update_id is None:
             self._idle_update_id = GLib.idle_add(self.update)
+            GLib.timeout_add(1.0, self.param_view.update_param_view, False)
         
     

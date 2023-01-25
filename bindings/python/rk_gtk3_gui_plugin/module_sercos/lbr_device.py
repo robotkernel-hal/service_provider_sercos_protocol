@@ -171,13 +171,24 @@ class lbr_device(sercos_device):
         in a progress bar, so that 0 means "nothing finished"
         and 1.0 means "all finished".
         """
+
+        if progress_display_func is None:
+            print("retrieve_sercos_parametersets(): Warning: no progress display!!")
         while True:
             cnt = 0
             for nr, parameterset in list(self.sercos_parametersets.items()):
                 if parameterset.all_valid():
                     cnt = cnt + 1
                 else:
-                    parameterset.get_parameters()
+                    if progress_display_func is not None:
+                        progress_display_func(float(cnt)/len(self.sercos_parametersets))
+                    parameterset.get_parameters(repeat_interval=0.1)
+                    
+                    #blocking = False
+                    #Gtk.main_iteration_do(blocking)
+                    Gtk.main_iteration()
+                    time.sleep(0.1)
+                    
                     # wait a moment because the device connection
                     # is busy anyway
                     if parameterset.wait_for_all_valid(timeout=0.5):
@@ -187,12 +198,18 @@ class lbr_device(sercos_device):
                         print("retrieve_sercos_parametersets(): still waiting for {}!".format(cnt))
 
 
-            if progress_display_func is not None:
-                progress_display_func(float(cnt)/len(self.sercos_parametersets))
+                if progress_display_func is not None:
+                    progress_display_func(float(cnt)/len(self.sercos_parametersets))
+
+                    
+                #blocking=False
+                #Gtk.main_iteration_do(blocking)
+                Gtk.main_iteration()
+                time.sleep(0.05)
 
             blocking = False
             Gtk.main_iteration_do(blocking)
-            time.sleep(0.2)
+            Gtk.main_iteration()
 
             if cnt == len(self.sercos_parametersets):
                 break
