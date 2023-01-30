@@ -23,6 +23,7 @@ from __future__ import division
 from builtins import map
 from builtins import range
 import os, yaml
+import time
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -347,6 +348,11 @@ class sercos_id_view(helpers.service_provider_view, helpers.builder_base):
             display_func = dlg.progressbar_parametersets.set_fraction
             dev.retrieve_dictionary(progress_display_func=display_func)
 
+            # insert small wait time to avoid overloading
+            # devices and bus
+            for k in range(10):
+                Gtk.main_iteration()
+                time.sleep(0.001)
 
         dlg.dialog_backup_all.hide()
 

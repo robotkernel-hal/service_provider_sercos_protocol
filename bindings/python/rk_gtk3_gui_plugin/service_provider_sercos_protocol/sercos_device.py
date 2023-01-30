@@ -162,8 +162,9 @@ class sercos_device(helpers.svc_wrapper):
            if progress_display_func is not None:
                progress_display_func(float(cnt) /len(self.sercos_dictionary))
 
-           Gtk.main_iteration()
-           time.sleep(0.01)
+           for k in range(10):
+               Gtk.main_iteration()
+               time.sleep(0.001)
 
            if cnt == len(self.sercos_dictionary):
                break
