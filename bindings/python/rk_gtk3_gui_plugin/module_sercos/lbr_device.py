@@ -186,16 +186,23 @@ class lbr_device(sercos_device):
                     
                     #blocking = False
                     #Gtk.main_iteration_do(blocking)
-                    Gtk.main_iteration()
-                    time.sleep(0.1)
+                    for i in range(100):
+                        Gtk.main_iteration()
+                        time.sleep(0.001)
                     
                     # wait a moment because the device connection
                     # is busy anyway
-                    if parameterset.wait_for_all_valid(timeout=0.5):
-                        print("retrieve_sercos_parametersets(): got new params for {}!".format(cnt))
-                        cnt = cnt + 1
+                    t0 = time.time()
+                    while t0 + 0.8 < time.time():
+                        if parameterset.wait_for_all_valid(timeout=0.001):
+                            print("retrieve_sercos_parametersets(): got new params for {}!".format(cnt))
+                            cnt = cnt + 1
+                            break
+                        else:
+                            Gtk.main_iteration()
                     else:
-                        print("retrieve_sercos_parametersets(): still waiting for {}!".format(cnt))
+                        print(("retrieve_sercos_parametersets(): still "
+                               "waiting for {}!").format(cnt))
 
 
                 if progress_display_func is not None:

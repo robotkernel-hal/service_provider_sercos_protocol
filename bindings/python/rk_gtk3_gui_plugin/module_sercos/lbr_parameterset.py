@@ -21,6 +21,7 @@ from builtins import range
 from builtins import object
 import math
 import sys
+import time
 import threading
 from os import environ
 
@@ -50,10 +51,19 @@ class lbr_parameterset(object):
         self.fd_get_data = None
         self.get_parameters(force_update)
 
-    def select_parameterset(self):
+    def select_parameterset(self, wait_interval=0.010):
+        """
+        selects a parameter set on the sercos device.
+        The wait interval is used just to avoid
+        race conditions in the robotkernel/ sercos code 
+        (if any race conditions are fixed,
+        it can be removed).
+        """
         # blocking write on parameter selection id 217
+        time.sleep(wait_interval)
         self.sercos_device.write_idn(217, self.number)
         self.sercos_device.set_command(216)
+        time.sleep(wait_interval)
 
         # blocking read on selected parameterset id 254
         selected_parameterset = int(self.sercos_device.read_idn(254).value)
@@ -69,6 +79,7 @@ class lbr_parameterset(object):
 
         with self.valid_condition:
             self.valid_set = [False] * 10
+        time.sleep(wait_interval)
 
     def get_parameters(self, force_update=False, repeat_interval=0.1):
         """
