@@ -4,7 +4,10 @@ _: &build_configs
 builds:
   - context: conan
     build_file: conanfile.msgdef.py
-    configurations: [osl15-x86_64]
+    configurations: *build_configs
   - context: conan
     build_file: conanfile.py
+    configurations: *build_configs
+  - context: conan
+    build_file: conanfile.rkgui.py
     configurations: *build_configs
