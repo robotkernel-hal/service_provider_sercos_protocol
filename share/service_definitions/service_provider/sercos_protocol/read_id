@@ -1,4 +1,4 @@
-name: service_provider_sercos_protocol/read_id
+name: service_provider/sercos_protocol/read_id
 request:
 - uint16_t: idn
 - uint8_t: elements
