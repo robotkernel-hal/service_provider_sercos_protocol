@@ -16,8 +16,8 @@ libservice_provider_sercos_protocol_la_LDFLAGS  = -Wall -release $(PACKAGE_VERSI
 
 VPATH = $(srcdir):$(top_srcdir)/share/service_definitions
 
-SERVICE_DEFINITIONS = robotkernel/service_provider_sercos_protocol/read_id \
-					  robotkernel/service_provider_sercos_protocol/write_id
+SERVICE_DEFINITIONS = service_provider/sercos_protocol/read_id \
+					  service_provider/sercos_protocol/write_id
 
 $(top_builddir)/src/main/cpp/service_definitions.h: Makefile $(SERVICE_DEFINITIONS)
 	install -d $(top_builddir)/src/main/cpp/include/robotkernel
