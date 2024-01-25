@@ -75,7 +75,7 @@ class lbr_device(sercos_device):
     def fill_parametersets(self):
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'parameter.yaml')
         with open(fn, "r") as fd:
-            data = yaml.load(fd)
+            data = yaml.full_load(fd)
         for i, parameter_set in enumerate(data):
             name = parameter_set["set"]
             self.sercos_parametersets[i] = lbr_parameterset(self, i, name)
