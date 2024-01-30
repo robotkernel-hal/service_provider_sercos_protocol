@@ -3,7 +3,7 @@ import os
 
 
 class MainProject(ConanFile):
-    python_requires = "conan_template/[~=5]@robotkernel/stable"
+    python_requires = "conan_template/[~5]@robotkernel/stable"
     python_requires_extend = "conan_template.RobotkernelConanFile"
 
     name = "service_provider_sercos_protocol"
@@ -15,4 +15,4 @@ class MainProject(ConanFile):
 
     def requirements(self):
         self.requires(f"{self.name}_ln_msgdef/{self.version}@{self.user}/{self.channel}")
-        self.requires("robotkernel/[~=5]@robotkernel/stable")
+        self.requires("robotkernel/[~5]@robotkernel/stable")

@@ -1,6 +1,7 @@
 import os
 from conan import ConanFile, conan_version
 from conan.tools.scm import Version
+from conan.tools.files import copy
 
 
 class service_provider_sercos_protocol_rkgui(ConanFile):
@@ -18,7 +19,7 @@ class service_provider_sercos_protocol_rkgui(ConanFile):
         self.requires(f"service_provider_sercos_protocol_ln_msgdef/{self.version}@{self.user}/{self.channel}")
 
     def package(self):
-        self.copy(os.path.join(self.pure_python_folder, "*"))
+        copy(self, os.path.join(self.pure_python_folder, "*"), self.source_folder, self.package_folder)
 
     def package_info(self):
         pypath1 = os.path.join(self.package_folder, os.path.dirname(self.pure_python_folder))
