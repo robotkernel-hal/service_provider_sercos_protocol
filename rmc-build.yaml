@@ -3,11 +3,11 @@ _: &build_configs
 
 builds:
   - context: conan
-    build_file: conanfile.msgdef.py
+    build_file: share/service_definitions/conanfile.py
     configurations: *build_configs
   - context: conan
     build_file: conanfile.py
     configurations: *build_configs
   - context: conan
-    build_file: conanfile.rkgui.py
+    build_file: bindings/python/conanfile.py
     configurations: *build_configs
