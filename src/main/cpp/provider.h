@@ -31,9 +31,7 @@
 
 // Robotkernel includes
 #include "robotkernel/service_provider_base.h"
-#include "robotkernel/service_provider_intf.h"
 #include "robotkernel/service.h"
-#include "robotkernel/kernel.h"
 #include "robotkernel/log_base.h"
 
 // Service provider includes 

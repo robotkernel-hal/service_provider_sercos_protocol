@@ -27,9 +27,6 @@
 #ifndef __SERVICE_PROVIDER__SERCOS_PROTOCOL__SERVICE_ID_H__
 #define __SERVICE_PROVIDER__SERCOS_PROTOCOL__SERVICE_ID_H__
 
-#include "robotkernel/kernel.h"
-#include "robotkernel/module.h"
-
 #include "service_provider/sercos_protocol/base.h"
 
 #include "string_util/string_util.h"

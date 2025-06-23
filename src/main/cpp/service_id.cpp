@@ -25,7 +25,6 @@
  */
 
 #include "service_id.h"
-#include "robotkernel/module.h"
 
 #include <string_util/string_util.h>
 

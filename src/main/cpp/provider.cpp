@@ -29,7 +29,6 @@
 #include "service_definitions.h"
 
 #include "robotkernel/exceptions.h"
-#include "robotkernel/kernel.h"
 
 SERVICE_PROVIDER_DEF(sercos_protocol, service_provider::sercos_protocol::provider);
 
