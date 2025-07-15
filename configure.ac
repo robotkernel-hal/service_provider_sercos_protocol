@@ -38,7 +38,7 @@ AC_CHECK_FUNCS([strdup])
 # Checks for library functions.
 AC_CHECK_LIB(dl, dlopen)
 
-AC_CONFIG_FILES([Makefile src/main/cpp/Makefile service_provider_sercos_protocol.pc])
+AC_CONFIG_FILES([Makefile src/Makefile service_provider_sercos_protocol.pc])
 
 AC_OUTPUT
 
