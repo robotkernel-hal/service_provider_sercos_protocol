@@ -1,2 +1,2 @@
 usr/lib/*/*.so
-usr/bindings/*
+usr/bindings usr/share/service-provider-sercos-protocol
