@@ -1,0 +1,297 @@
+service-provider-sercos-protocol (6.0.0~pre1) unstable; urgency=low
+
+  * fix: new conant_template
+
+ -- Robert Burger <robert.burger@dlr.de>  Thu, 7 Dec 2023 08:55:27 +0100
+
+service-provider-sercos-protocol (5.1.2) unstable; urgency=low
+
+  * Merge pull request #17 from robotkernel/release/5.1.2
+  * using new service_helper classes
+
+ -- Mühlbauer, Maximilian Sebastian <Maximilian.Muehlbauer@dlr.de>  Thu, 10 Aug 2023 09:26:12 +0200
+
+service-provider-sercos-protocol (5.1.1) unstable; urgency=low
+
+  * fix: python path of rkgui plugin
+
+ -- Robert Burger <robert.burger@dlr.de>  Fri, 10 Mar 2023 06:21:11 +0100
+
+service-provider-sercos-protocol (5.1.0) unstable; urgency=low
+
+  * fix: rename python_rkgui to only rkgui due to stupid 51 char limitation of conan
+  * tweak: insert a small wait time when backing up more devices
+  * fix: reduce probability of deadlock/crash by throttling download
+  * improve performance of updates
+  * fix: disable parameter tab refresh, causing considerable slowdown
+  * fix parameter backup and updating of parameters
+  * fix saving of parameters
+  * fix API usage
+  * fix doc
+  * Merge branch 'feat/py3-support' of rmc-github.robotic.dlr.de:robotkernel/service-provider-sercos-protocol into feat/py3-support
+  * fix bug w/ wrong context in parameterst update
+  * debug: add some debug code (WIP)
+  * fix: backup of SERCOS ids
+  * fix: row update in id view by double-click
+  * Merge remote-tracking branch 'origin/feat/py3-support.doubleclick-refresh' into feat/py3-support
+  * doc: refactor code and add some doc strings
+  * refactor: move retrieval of sercos parameters to device class
+  * refactor: move retrieval of backup data into device class
+  * chore: rework and merge ui file
+  * set expand flags for process data view
+  * change stacking of windows in processdata view to vertical
+  * fix: correct name of class in comment
+  * add key binding to refrsh entry on double click
+  * tweak: try to improve scrolling
+  * remove previously added children from scrolled_window
+  * style: remove dead code
+  * fix: add Gdk to imports
+  * fix: wrap edge case of single value instead of list
+  * fix: redraw device list/treeview
+  * tweak updates
+  * style: remove dead code
+  * fix: formatting
+  * fix: formatting
+  * style: remove unused import
+  * style: remove dead code
+  * chore: move module_sercos stuff to service provider
+  * feat: add inique device_id method to simplify management
+  * style: remove debug print
+  * fix: make thread context explicit in call
+  * add url to conanfile to reduce noise
+  * rename duplicated name, and make globbed imports more specific
+  * register FIXME
+  * add used version for gi
+  * use convenience helper for active color name
+  * Merge remote-tracking branch 'mueh-mm/feat/py3-support' into feat/py3-support
+  * optimize insertion of new data
+  * clarify and tidy up updating in different contexts
+  * avoid repeated overlapping updates
+  * set encoding of name, and simplify list comprehension Sets the encoding of the name to utf-8, and simplifies the list comprehension into a for loop.
+  * delegate encoding to yaml module
+  * replace quadratic loop with set operation
+  * omit stop condition which is not needed any more The stop condition is not needed longer because the updater thread is now daemonic, that is it will stop automatically.
+  * replace callback and generator with for loop
+  * make update thread stop automatically on process exit This cleans up the quirky signal handling, which has been changed to use the default signal handler
+  * use context manager for file writing
+  * fix broken and unnecessarily complex list comprehension
+  * move updating to GUI thread
+  * add missing import from gi
+  * add cache for treestore ids
+  * correct callback handler Probably, this callback should not be set at all in the builder file.
+  * convert color attribute to string as new API expects
+  * fix: set text values
+  * fix: list changed size during iteration
+  * fix: add missing logger
+  * fix: string decoding for Python3
+  * open file with "open" instead "file()"
+  * fix: empty value in file_dialog
+  * feat/py3: apply conversion with futurize
+  * feat: convert string formatting to py3 standard
+  * feat/python3
+  * feat/gtk3: fix API change for color styling
+  * feat/gtk3: add workaround for missing handler
+  * fix: Gtk3 API fixes
+  * fix: update plugin path for GTK3
+  * convert to GTK3
+  * convert to gtk3
+
+ -- Robert Burger <robert.burger@dlr.de>  Wed, 22 Feb 2023 10:11:43 +0100
+
+service-provider-sercos-protocol (5.0.6) unstable; urgency=low
+
+  * FIX: adding rk_gui_plugin folder to python path
+
+ -- Robert Burger <robert.burger@dlr.de>  Tue, 5 Apr 2022 10:14:29 +0200
+
+service-provider-sercos-protocol (5.0.5) unstable; urgency=low
+
+  * ADD: missing msgdef conanfile
+  * CHANGE: switching to yaml service definition files
+
+ -- Robert Burger <robert.burger@dlr.de>  Fri, 4 Feb 2022 11:36:00 +0100
+
+service-provider-sercos-protocol (5.0.4) unstable; urgency=low
+
+  * added missing import
+  * added rk_gui_plugin
+  * switching to defaults
+  * changed to version 5 instead of 5.0
+  * using conan template
+
+ -- Robert Burger <robert.burger@dlr.de>  Fri, 31 Jan 2020 10:03:32 +0100
+
+service-provider-sercos-protocol (5.0.3) unstable; urgency=low
+
+  * changed targets
+  * Merge branch 'release/5.0.3'
+  * added architectures
+  * added architectures
+  * added architectures
+  * added architectures
+  * fixed jenkinsfile
+  * fixed jenkinsfile
+  * added architectures
+  * added architectures
+  * build: updated build/ci files for cissy 1.0->2.0
+  * build: updated build/ci files for cissy 1.0->2.0
+  * added check of val not 0
+  * added service names
+  * new conan recipe
+  * updated jenkins file
+  * fixed deps, added build archs
+  * fixed project name
+  * added jenkins stuff
+
+ -- Robert Burger <robert.burger@dlr.de>  Thu, 24 Oct 2019 07:21:31 +0200
+
+service-provider-sercos-protocol (5.0.2) unstable; urgency=low
+
+  * prep 5.0.2
+  * added reading of attr before writing data to determine data type
+
+ -- Robert Burger <robert.burger@dlr.de>  Fri, 6 Apr 2018 09:10:25 +0200
+
+service-provider-sercos-protocol (5.0.1) unstable; urgency=low
+
+  * fixed install rule
+  * prep 5.0.1
+  * fixed lnc include file
+  * fixed log_base service prefix
+
+ -- Robert Burger <robert.burger@dlr.de>  Thu, 29 Mar 2018 07:32:33 +0200
+
+service-provider-sercos-protocol (5.0.0) unstable; urgency=low
+
+  * Prep 5.0.0 release
+  * auto commit
+  * set supported languages to c++
+  * latest
+  * fixed generation of lnc include file, fixed service definitions to match yaml 1.2 spec
+  * fixed doc, desc and version
+  * fixed ln include file
+  * removed ln message defs
+  * fixed service prefix
+  * latest device name fixes
+  * fixes for latest rk changes
+  * added new dependency resolution
+  * added destructor
+  * removed unneeded files
+  * added install rule for pc file
+  * autotools build
+  * fixed template args
+  * added missing files
+  * changes for new service calls in robotkernel-5
+  * changes for robotkernel-5
+  * no_ln work
+
+ -- Robert Burger <robert.burger@dlr.de>  Mon, 12 Mar 2018 09:41:02 +0100
+
+service-provider-sercos-protocol (4.1.0) unstable; urgency=low
+
+  * 'automated_commit'
+  * 'scripts_updated'
+  * 'scripts_updated'
+  * fixed build
+  * 'scripts_updated'
+  * 'replaced_with_default'
+  * 'scripts_updated'
+  * 'scripts_updated'
+  * 'scripts_updated'
+  * Merge branch 'master' of rmc-github.robotic.dlr.de:robotkernel/interface_sercos_protocol
+  * 'scripts_updated'
+  * fixed gradle build
+  * fixed gradle build
+  * 'scripts_updated'
+  * 'scripts_updated'
+  * "transforming"
+  * 'scripts_updated'
+  * updated scripts
+  * added submodule scripts
+  * fixed return values of element updates, cache should now work better valid flag should work better status will be reset
+
+ -- Robert Burger <robert.burger@dlr.de>  Wed, 30 Nov 2016 10:28:05 +0100
+
+service-provider-sercos-protocol (4.0.1) unstable; urgency=low
+
+  * inc version
+
+ -- Robert Burger <robert.burger@dlr.de>  Fri, 2 Oct 2015 11:47:45 +0000
+
+service-provider-sercos-protocol (4.0.0) unstable; urgency=low
+
+  * switched to yamlcpp 0.5.2 prep 4.0.0 switched to interface_base
+  * added ignores
+
+ -- Robert Burger <robert.burger@dlr.de>  Tue, 15 Sep 2015 09:00:58 +0000
+
+service-provider-sercos-protocol (3.1.2) unstable; urgency=low
+
+  * build fixes for qnx and vxworks
+  * now using error_message filed
+
+ -- Robert Burger <robert.burger@dlr.de>  Thu, 20 Aug 2015 07:15:21 +0000
+
+service-provider-sercos-protocol (3.1.1) unstable; urgency=low
+
+  * fixed path
+  * new build
+  * build system changes
+
+ -- Robert Burger <robert.burger@dlr.de>  Thu, 2 Jul 2015 13:31:17 +0000
+
+service-provider-sercos-protocol (3.1.0) unstable; urgency=low
+
+  * interface fixes
+
+ -- Robert Burger <robert.burger@dlr.de>  Mon, 2 Feb 2015 08:22:44 +0000
+
+service-provider-sercos-protocol (3.0.4) unstable; urgency=low
+
+  * prep 3.0.4
+
+ -- Robert Burger <robert.burger@dlr.de>  Fri, 5 Dec 2014 09:17:39 +0000
+
+service-provider-sercos-protocol (3.0.3) unstable; urgency=low
+
+  * prep 3.0.3
+  * modified debug levels, fixed read -> not reading strc any more, fixed max and min with strings to N/A
+  * added debugging
+
+ -- Robert Burger <robert.burger@dlr.de>  Fri, 17 Oct 2014 12:10:04 +0000
+
+service-provider-sercos-protocol (3.0.2) unstable; urgency=low
+
+  * small fix release
+  * fixed ln include file
+
+ -- Robert Burger <robert.burger@dlr.de>  Wed, 6 Aug 2014 11:49:21 +0000
+
+service-provider-sercos-protocol (3.0.1) unstable; urgency=low
+
+  * fixed ptfile
+  * fixed build
+  * fixed configure.ac
+  * added ln include file
+  * added envs to m4
+
+ -- Robert Burger <robert.burger@dlr.de>  Wed, 6 Aug 2014 07:32:33 +0000
+
+service-provider-sercos-protocol (3.0.0) unstable; urgency=low
+
+  * new release to match rk version
+
+ -- Robert Burger <robert.burger@dlr.de>  Fri, 1 Aug 2014 07:53:42 +0000
+
+service-provider-sercos-protocol (1.0.0) unstable; urgency=low
+
+  * added md's to release
+  * fixed rmpm flags search on anstrom
+  * added external build scripts
+  * fixed ptfile
+  * added missing build files
+  * imported from: https://rmsvn01.robotic.dlr.de/repos/f_soft_src/robotkernel/trunk/src/interfaces/sercos_protocol rev : 43481
+  * creating svn directory 'https://rmsvn01.robotic.dlr.de/software/robotkernel/src/interface_sercos_protocol/trunk' [rmpm admintool (burger_r, 2014-08-01-07-09-55)]
+
+ -- Robert Burger <robert.burger@dlr.de>  Fri, 1 Aug 2014 05:38:34 +0000
+
