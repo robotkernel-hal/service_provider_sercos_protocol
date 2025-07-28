@@ -298,9 +298,9 @@ class sercos_id_view(helpers.service_provider_view, helpers.builder_base):
 
     def add(self, modname, devname):
         device_key = (modname, devname)
-        print('adding ', device_key)
 
         if device_key not in self.devices:
+            print('adding ', device_key)
             self.devices[device_key] = sercos_device(
                     self.service_prefix, self.parent.app, self, modname, devname)
 
@@ -330,11 +330,9 @@ class sercos_id_view(helpers.service_provider_view, helpers.builder_base):
             self.treestore_id_cache.add(idn)
 
     def trigger_update(self):
-        if self._idle_update_id is None:
-            self._idle_update_id = GLib.idle_add(self.update)
+        GLib.idle_add(self.update)
         
     def update(self):
-        self._idle_update_id = None
         self.show_indices()
         self.treeview_dictionary.queue_draw()
         return False
@@ -395,12 +393,16 @@ class sercos_id_view(helpers.service_provider_view, helpers.builder_base):
         if (row is None):
             print("on_tv_row_activated(): path empty, skipping row update")
             return False
-        
+
+        if getattr(self, "on_tv_row_activated_active", False):
+            return
+        self.on_tv_row_activated_active = True
         dev = self.devices[self.current_device]
         dev.list_dictionary()
 
         idn = self.treestore_dictionary[row][0]
         dev.update_idn(idn, force=True)
+        self.on_tv_row_activated_active = False
         
 
     def on_edit_sercos_value(self, cr, path, newvalue):
