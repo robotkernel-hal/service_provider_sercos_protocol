@@ -138,7 +138,7 @@ class sercos_view(helpers.builder_base):
     def hide(self):
         if self.active_module:
             for key, dev in list(self.active_module._lbr_devices.items()):
-                dev.stopped = True # trigger stop
+                dev.prepare_stop_update()
             # now collect them
             for key, dev in list(self.active_module._lbr_devices.items()):
                 dev.stop_update()

@@ -52,10 +52,21 @@ class sercos_device(helpers.svc_wrapper):
         #threading.Thread(target=self.list_dictionary).start()
 
         self.ids_to_update = []
-        thread = threading.Thread(target=self.update_thread)
-        thread.daemon = True
-        thread.start()
+        self.sd_update_thread_keep_running = True
+        self._sd_thread_id = threading.Thread(target=self.update_thread)
+        self._sd_thread_id.daemon = True
+        self._sd_thread_id.start()
 
+    def prepare_stop(self):
+        with self.updater_condition:
+            self.sd_update_thread_keep_running = False
+            self.updater_condition.notify()
+
+    def stop(self):
+        if self._sd_thread_id:
+            self.prepare_stop()
+            self._sd_thread_id.join()
+            self._sd_thread_id = None
 
     def device_id(self):
         """return a constant id which is unique for a device and
@@ -116,7 +127,7 @@ class sercos_device(helpers.svc_wrapper):
                 self.updater_condition.notify()
 
     def update_thread(self):
-        while True:
+        while self.sd_update_thread_keep_running:
             with self.updater_condition:
                 self.updater_condition.wait()
 

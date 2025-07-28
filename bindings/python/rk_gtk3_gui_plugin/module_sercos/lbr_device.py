@@ -64,12 +64,13 @@ class lbr_device(sercos_device):
         self.actual_parameter_set = -1
         self.commands = []
         self.stopped = True
-        self.update_thread = None
+        self.update_thread_id = None
 
         threading.Timer(0.1, self.fill_parametersets).start()
 
     def __del__(self):
         print('deleting device ', self.devname)
+        sercos_device.stop(self)
         self.stop_update()
 
     def fill_parametersets(self):
@@ -88,16 +89,19 @@ class lbr_device(sercos_device):
 
     def start_update(self):
         self.stopped = False
-        self.update_thread = threading.Thread(target=self.pd_update)
-        self.update_thread.daemon = True # terminate on exit of main thread
-        self.update_thread.start()
+        self.update_thread_id = threading.Thread(target=self.pd_update)
+        self.update_thread_id.daemon = True # terminate on exit of main thread
+        self.update_thread_id.start()
+
+    def prepare_stop_update(self):
+        self.stopped = True
 
     def stop_update(self):
-        self.stopped = True
-        if self.update_thread is not None:
+        if self.update_thread_id is not None:
             print("waiting for update thread to stop")
-            self.update_thread.join()
-            self.update_thread = None
+            self.prepare_stop_update()
+            self.update_thread_id.join()
+            self.update_thread_id = None
 
     def pd_update(self):
         # both sercos_device and the derived lbr_device
