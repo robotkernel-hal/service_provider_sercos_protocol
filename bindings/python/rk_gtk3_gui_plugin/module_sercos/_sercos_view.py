@@ -127,7 +127,6 @@ class sercos_view(helpers.builder_base):
         
         self.id_view.main.show()
         self.processdata_view.create_views()
-        self.processdata_view.main.show()
         self.param_view.main.show()
         self.diag_view.fill_device()
         self.diag_view.main.show()
@@ -141,7 +140,7 @@ class sercos_view(helpers.builder_base):
                 dev.stop_update()
 
         self.id_view.main.hide()
-        self.processdata_view.main.hide()
+        self.processdata_view.hide()
         self.param_view.main.hide()
         self.diag_view.main.hide()
 
