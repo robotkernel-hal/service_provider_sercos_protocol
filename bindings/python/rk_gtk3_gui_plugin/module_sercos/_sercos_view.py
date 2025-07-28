@@ -110,6 +110,7 @@ class sercos_view(helpers.builder_base):
                     print(traceback.format_exc())
                     pass
 
+        self.active_module = module
         # Add any devices which are new to the tree store.
         # This does not remove devices which have disappeared -
         # for this, robotkernel_gui currently needs to be restarted
@@ -136,7 +137,10 @@ class sercos_view(helpers.builder_base):
 
     def hide(self):
         if self.active_module:
-            for key, dev in list(module._lbr_devices.items()):
+            for key, dev in list(self.active_module._lbr_devices.items()):
+                dev.stopped = True # trigger stop
+            # now collect them
+            for key, dev in list(self.active_module._lbr_devices.items()):
                 dev.stop_update()
 
         self.id_view.main.hide()
