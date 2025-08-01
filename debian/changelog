@@ -1,7 +1,8 @@
-service-provider-sercos-protocol (6.0.0~pre1) unstable; urgency=low
+service-provider-sercos-protocol (6.0.0~pre2) unstable; urgency=low
 
   * fix: new conant_template
   * update: debian docs
+  * fix: debian dev-package depends
 
  -- Robert Burger <robert.burger@dlr.de>  Thu, 7 Dec 2023 08:55:27 +0100
 
