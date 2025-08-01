@@ -14,10 +14,16 @@ Section: libdevel
 Architecture: any
 Multi-Arch: same
 Depends: robotkernel-dev (= ${binary:Version}), ${misc:Depends}
-Description: TODO
+Description: Robotkernel service provider to export sercos dictionary access services.
+  This service provider gains unified access to sercos dictionaries of robotkernel
+  modules. It support retreaving of object dictionary lists, read objects, read and write
+  object elements.
 
 Package: service-provider-sercos-protocol
 Architecture: any
 Multi-Arch: same
 Depends: robotkernel ${misc:Depends}
-Description: TODO
+Description: Robotkernel service provider to export sercos dictionary access services.
+  This service provider gains unified access to sercos dictionaries of robotkernel
+  modules. It support retreaving of object dictionary lists, read objects, read and write
+  object elements.
