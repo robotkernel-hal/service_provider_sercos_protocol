@@ -1,4 +1,4 @@
-service-provider-sercos-protocol (6.0.0~pre2) unstable; urgency=low
+service-provider-sercos-protocol (6.0.0) unstable; urgency=low
 
   * fix: new conant_template
   * update: debian docs
