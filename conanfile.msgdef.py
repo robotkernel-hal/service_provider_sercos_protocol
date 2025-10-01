@@ -17,6 +17,7 @@ class MainProject(ConanFile):
 
     tool_requires = ["robotkernel_ln_helper/[*]@robotkernel/stable"]
     generators = "VirtualBuildEnv"
+    package_type = "application"
 
     def package(self):
         svc_def_dir = "share/service_definitions"
