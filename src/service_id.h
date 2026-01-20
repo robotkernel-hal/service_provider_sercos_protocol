@@ -83,10 +83,10 @@ std::string service_id::_val_to_buf(const char *fmt_flt, const char *fmt_dec,
     if (decimal) {
         double ddata = val[0];
         ddata /= pow(10., (double)decimal);
-        return robotkernel::string_printf(fmt_flt, decimal, ddata); 
+        return robotkernel::helpers::string_printf(fmt_flt, decimal, ddata); 
     } 
 
-    return robotkernel::string_printf(fmt_dec, val[0]); 
+    return robotkernel::helpers::string_printf(fmt_dec, val[0]); 
 }
 
 template<typename signed_T, typename unsigned_T, typename float_T>
