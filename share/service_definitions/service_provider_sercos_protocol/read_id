@@ -1,14 +1,15 @@
-name: service_provider_sercos_protocol/read_id
-request:
-- uint16_t: idn
-- uint8_t: elements
-response:
-- uint16_t: structure
-- string: name
-- string: unit
-- uint32_t: attr
-- string: min_value
-- string: max_value
-- string: value
-- string: error_message
+services:
+  - name: service_provider_sercos_protocol/read_id
+    request:
+      - { name: idn, type: uint16_t }
+      - { name: elements, type: uint8_t }
+    response:
+      - { name: structure, type: uint16_t }
+      - { name: name, type: string }
+      - { name: unit, type: string }
+      - { name: attr, type: uint32_t }
+      - { name: min_value, type: string }
+      - { name: max_value, type: string }
+      - { name: value, type: string }
+      - { name: error_message, type: string, default: "no error" }
 

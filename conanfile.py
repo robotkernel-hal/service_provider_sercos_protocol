@@ -11,11 +11,11 @@ class MainProject(ConanFile):
     description = "robotkernel service provider for sercos protocol devices."
     exports_sources = ["*", "!.gitignore", "!bindings"]
 
-    tool_requires = ["robotkernel_service_helper/[~6]@robotkernel/unstable"]
+    tool_requires = ["robotkernel_service_helper/6.0.0-yaml-service@robotkernel/unstable"]
 
     def source(self):
         self.run(f"sed 's/AC_INIT(.*/AC_INIT([service_provider_sercos_protocol], [{self.version}], [{self.author}])/' configure.ac.in > configure.ac")
 
     def requirements(self):
-        #self.requires(f"{self.name}_ln_msgdef/{self.version}@{self.user}/{self.channel}")
-        self.requires("robotkernel/[~6]@robotkernel/unstable")
+        self.requires(f"{self.name}_ln_msgdef/{self.version}@{self.user}/{self.channel}")
+        self.requires("robotkernel/6.0.0-yaml-service@robotkernel/unstable")

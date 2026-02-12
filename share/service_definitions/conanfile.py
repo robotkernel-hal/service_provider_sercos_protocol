@@ -15,7 +15,7 @@ class MainProject(ConanFile):
         "*",
     ]
 
-    tool_requires = ["robotkernel_ln_helper/[*]@robotkernel/stable"]
+    tool_requires = ["robotkernel_ln_helper/[~6]@robotkernel/unstable"]
     generators = "VirtualBuildEnv"
 
     def package(self):
