@@ -1,15 +1,15 @@
 services:
-  - name: service_provider_sercos_protocol/write_id
+  service_provider_sercos_protocol/write_id:
     request:
-      - { name: idn, type: uint16_t }
-      - { name: elements, type: uint8_t }
-      - { name: structure, type: uint16_t }
-      - { name: name, type: string }
-      - { name: unit, type: string }
-      - { name: attr, type: uint32_t }
-      - { name: min_value, type: string }
-      - { name: max_value, type: string }
-      - { name: value, type: string }
+      idn: { type: uint16_t }
+      elements: { type: uint8_t }
+      structure: { type: uint16_t }
+      name: { type: string }
+      unit: { type: string }
+      attr: { type: uint32_t }
+      min_value: { type: string }
+      max_value: { type: string }
+      value: { type: string }
     response:
-      - { name: error_message, type: string, default: "no error" }
+      error_message: { type: string, default: "no error" }
 
