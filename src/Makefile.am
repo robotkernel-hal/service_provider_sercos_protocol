@@ -21,7 +21,7 @@ SERVICE_DEFINITIONS = service_provider_sercos_protocol/read_id \
 
 $(top_builddir)/src/service_definitions.h: Makefile $(SERVICE_DEFINITIONS)
 	@echo creating $@
-	service_generate --indir $(top_srcdir)/share/service_definitions --out $@ $(SERVICE_DEFINITIONS)
+	rk_generate --indir $(top_srcdir)/share/service_definitions --out $@ $(SERVICE_DEFINITIONS)
 	touch $@
 
 

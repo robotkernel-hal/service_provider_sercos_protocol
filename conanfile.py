@@ -11,7 +11,7 @@ class MainProject(ConanFile):
     description = "robotkernel service provider for sercos protocol devices."
     exports_sources = ["*", "!.gitignore", "!bindings"]
 
-    tool_requires = ["robotkernel_service_helper/[~6]@robotkernel/unstable"]
+    tool_requires = ["robotkernel_generator/[~6]@robotkernel/unstable"]
 
     def source(self):
         self.run(f"sed 's/AC_INIT(.*/AC_INIT([service_provider_sercos_protocol], [{self.version}], [{self.author}])/' configure.ac.in > configure.ac")
