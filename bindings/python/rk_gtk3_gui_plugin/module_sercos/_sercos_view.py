@@ -79,7 +79,11 @@ class sercos_view(helpers.builder_base):
         self.active_module = None
         self.hide()
 
+    def info(self, msg):
+        logger.info(f"sercos_view: {msg}")
+
     def show(self, modname, module):
+        self.info(f"show() for modname {modname!r} module {module.name!r}")
         pagenum = self.parent.module_notebook.get_current_page()
 
         if not hasattr(module, '_lbr_devices'):
@@ -101,6 +105,7 @@ class sercos_view(helpers.builder_base):
 
         # initially fill all devices found by ln
         for s in module.childs:
+            self.info(f"  show() child {s!r}")
             if s not in module._lbr_devices:
                 try:
                     dev = lbr_device(module.robotkernel_name, self.app, self, module.name, s)
