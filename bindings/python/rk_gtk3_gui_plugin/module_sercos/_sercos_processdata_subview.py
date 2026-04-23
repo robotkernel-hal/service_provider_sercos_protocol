@@ -36,6 +36,7 @@ class sercos_processdata_subview(helpers.builder_base):
         self.clnt = self.app.clnt
         self.active_color = helpers.gui_utils.get_active_color(self.app.window)
         self.device_store = device_store
+        self.update_timer = None
         self.is_initialized = False
 
     def update_view(self):
@@ -72,8 +73,15 @@ class sercos_processdata_subview(helpers.builder_base):
 
 
         self.is_initialized = True
-        # GObject.timeout_add(1000, self.update_view) # possibly not needed, as sercos device triggers updates
+        if self.update_timer is None:
+            self.update_timer = GLib.timeout_add(450, self.update_view)
         self.main.show_all()
+
+    def hide(self):
+        self.main.hide()
+        if self.update_timer is not None:
+            GLib.source_remove(self.update_timer)
+            self.update_timer = None
 
     #CREATORS
     def create_view(self, columns_idn):

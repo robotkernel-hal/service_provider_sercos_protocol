@@ -1,16 +1,17 @@
 import os
+
 from conan import ConanFile, conan_version
-from conan.tools.scm import Version
 from conan.tools.files import copy
 
 
 class service_provider_sercos_protocol_rkgui(ConanFile):
+    package_type = "application" # needed by Conan 2 to pass env variables
     name = "service_provider_sercos_protocol_rkgui"
     description = "python rkgui binding to service_provider_sercos_protocol."
     author = "Robert Burger <robert.burgert@dlr.de>"
     license = "GPLv3"
-    
-    url = f"https://rmc-github.robotic.dlr.de/robotkernel/service_provider_sercos_protocol"
+
+    url = "https://rmc-github.robotic.dlr.de/robotkernel/service_provider_sercos_protocol"
     settings = "os"
     pure_python_folder = "."
     exports_sources = [ "*", os.path.join(pure_python_folder, "*") ]
@@ -24,7 +25,7 @@ class service_provider_sercos_protocol_rkgui(ConanFile):
     def package_info(self):
         pypath1 = os.path.join(self.package_folder, "rk_gtk3_gui_plugin")
         pypath2 = os.path.join(self.package_folder, "rk_gui_plugin")
-        if Version(conan_version) < "2.0.0":
+        if conan_version < "2.0.0":
             self.env_info.PYTHONPATH.append(pypath1)
             self.env_info.PYTHONPATH.append(pypath2)
         self.runenv_info.append_path("PYTHONPATH", pypath1)

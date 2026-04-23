@@ -79,7 +79,11 @@ class sercos_view(helpers.builder_base):
         self.active_module = None
         self.hide()
 
+    def info(self, msg):
+        logger.info(f"sercos_view: {msg}")
+
     def show(self, modname, module):
+        self.info(f"show() for modname {modname!r} module {module.name!r}")
         pagenum = self.parent.module_notebook.get_current_page()
 
         if not hasattr(module, '_lbr_devices'):
@@ -101,6 +105,7 @@ class sercos_view(helpers.builder_base):
 
         # initially fill all devices found by ln
         for s in module.childs:
+            self.info(f"  show() child {s!r}")
             if s not in module._lbr_devices:
                 try:
                     dev = lbr_device(module.robotkernel_name, self.app, self, module.name, s)
@@ -110,6 +115,7 @@ class sercos_view(helpers.builder_base):
                     print(traceback.format_exc())
                     pass
 
+        self.active_module = module
         # Add any devices which are new to the tree store.
         # This does not remove devices which have disappeared -
         # for this, robotkernel_gui currently needs to be restarted
@@ -127,7 +133,6 @@ class sercos_view(helpers.builder_base):
         
         self.id_view.main.show()
         self.processdata_view.create_views()
-        self.processdata_view.main.show()
         self.param_view.main.show()
         self.diag_view.fill_device()
         self.diag_view.main.show()
@@ -137,11 +142,14 @@ class sercos_view(helpers.builder_base):
 
     def hide(self):
         if self.active_module:
-            for key, dev in list(module._lbr_devices.items()):
+            for key, dev in list(self.active_module._lbr_devices.items()):
+                dev.prepare_stop_update()
+            # now collect them
+            for key, dev in list(self.active_module._lbr_devices.items()):
                 dev.stop_update()
 
         self.id_view.main.hide()
-        self.processdata_view.main.hide()
+        self.processdata_view.hide()
         self.param_view.main.hide()
         self.diag_view.main.hide()
 

@@ -17,6 +17,7 @@ class MainProject(ConanFile):
 
     tool_requires = ["robotkernel_ln_helper/[~6]@robotkernel/unstable"]
     generators = "VirtualBuildEnv"
+    package_type = "application"
 
     def package(self):
         ln_msg_dir = "share/ln/message_definitions"

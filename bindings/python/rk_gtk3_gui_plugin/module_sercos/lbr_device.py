@@ -64,18 +64,19 @@ class lbr_device(sercos_device):
         self.actual_parameter_set = -1
         self.commands = []
         self.stopped = True
-        self.update_thread = None
+        self.update_thread_id = None
 
         threading.Timer(0.1, self.fill_parametersets).start()
 
     def __del__(self):
         print('deleting device ', self.devname)
+        sercos_device.stop(self)
         self.stop_update()
 
     def fill_parametersets(self):
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'parameter.yaml')
         with open(fn, "r") as fd:
-            data = yaml.load(fd)
+            data = yaml.full_load(fd)
         for i, parameter_set in enumerate(data):
             name = parameter_set["set"]
             self.sercos_parametersets[i] = lbr_parameterset(self, i, name)
@@ -88,60 +89,37 @@ class lbr_device(sercos_device):
 
     def start_update(self):
         self.stopped = False
-        self.update_thread = threading.Thread(target=self.pd_update)
-        self.update_thread.daemon = True # terminate on exit of main thread
-        self.update_thread.start()
+        self.update_thread_id = threading.Thread(target=self.pd_update)
+        self.update_thread_id.daemon = True # terminate on exit of main thread
+        self.update_thread_id.start()
+
+    def prepare_stop_update(self):
+        self.stopped = True
 
     def stop_update(self):
-        self.stopped = True
-        if self.update_thread is not None:
+        if self.update_thread_id is not None:
             print("waiting for update thread to stop")
-            self.update_thread.join()
-            self.update_thread = None
+            self.prepare_stop_update()
+            self.update_thread_id.join()
+            self.update_thread_id = None
 
-    def pd_update(self, from_gui_context=False):
+    def pd_update(self):
         # both sercos_device and the derived lbr_device
         # share the same device object, but update them from
         # different threads.
         # This means we have to protect the shared
         # buffers with a lock.
-        # Also, we need to take into account
-        # whether the calls run in GTK mainloop (GUI) context
-
-        # (my (nix_jo) guess is this runs only in the
-        # separate updater thread, so the mainloop case is unused,
-        # but I am not 100% sure here).
-    
-        
-        _svc = self.pd_svc_wrapper 
+        _svc = self.pd_svc_wrapper
         while not self.stopped:
             # Note: the lock is inherited from the parent class
             
             with self.lock:
-                if from_gui_context:
-                    _svc.svc_out._mainloop = helpers.svc_wrapper._mainloop
-                    _svc.svc_out.call_via_mainloop()
-                    _svc.svc_out._mainloop = None
-                else:
-                    _svc.svc_out.call()
-            
-                if from_gui_context:
-                    _svc.svc_in._mainloop = helpers.svc_wrapper._mainloop
-                    _svc.svc_in.call_via_mainloop()
-                    _svc.svc_in._mainloop = None
-                else:
-                    _svc.svc_in.call()
+                _svc.svc_out.call()
+                _svc.svc_in.call()
                 self.pdin = _svc.svc_in.resp.data
                 self.pdout  = _svc.svc_out.resp.data
-                # call below could perhaps go into parent's
-                #  .trigger_update()/update() method
 
-            if from_gui_context:
-                self.parent.processdata_view.main.queue_draw()
-            else:
-                GLib.idle_add(self.parent.processdata_view.main.queue_draw)
-                
-        time.sleep(0.5)
+            time.sleep(0.5)
     
     def create_pd_mapping(self, config_list):
         # this function is used both to create a mapping for pdin and pdout

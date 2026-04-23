@@ -63,6 +63,8 @@ void handler::svc_read_id(const struct svc_req_read_id& req, struct svc_resp_rea
     try {
         service_id id;
         _instance->sercos_read_idn(req.idn, elements, id.data);
+
+	resp.name = id.data.name.c_str();
     
         if (elements & SSE_ATTR) 
             resp.attr = *(uint32_t *)&id.data.attr;
