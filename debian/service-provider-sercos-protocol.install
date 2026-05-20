@@ -1,2 +1,2 @@
-usr/lib/*/*.so
-usr/bindings usr/share/service-provider-sercos-protocol
+usr/share/robotkernel/lib/*.so
+usr/share/robotkernel/bindings usr/share/service-provider-sercos-protocol
